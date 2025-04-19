@@ -7,22 +7,22 @@ from email.message import EmailMessage
 # Create your views here.
 
 def login_html(request):
-    return render(request, 'login.html')
+    return render(request, 'trashApp/login.html')
 
 def registrieren_html(request):
-    return render(request, 'registrieren.html')
+    return render(request, 'trashApp/registrieren.html')
 
 def profil_html(request):
-    return render(request, 'profil.html')
+    return render(request, 'trashApp/profil.html')
 
 def profil_bearbeiten(request):
-    return render(request, 'profil.html')
+    return render(request, 'trashApp/profil.html')
 
 def dashboard_html(request):
-    return render(request, 'dashboard.html')
+    return render(request, 'trashApp/dashboard.html')
 
 def logout(request):
-    return redirect('login')
+    return redirect('trashApp/login.html')
 
 def kontakt_email(request):
     return HttpResponse("""

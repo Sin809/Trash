@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/trash.css' %}" />
+    <script type="text/javascript" src="{% static 'scripts/script.js' %}"></script>
+</head>
+<body>
+    {% include "ZeitApp/navigationsleiste.html" %}
+    <div class="gesamtbereichclass">
+        <div class="standardDivclass">
+            <h2 class="hauptUeberschriftenclass">Mein Profil</h2>
+                
+            <p>Vorname: {{ benutzer.vorname }}</p>
+                <p>Nachname: {{ benutzer.nachname }}</p>
+                <p>E-Mail: {{ benutzer.email }}</p>
+                <p>Matrikelnummer: {{ benutzer.matrikelnummer }}</p>
+                <p>Rolle: {{ benutzer.rolle }}</p>
+
+                {% if benutzer.rolle == "Einfacher Anwender" %}
+                <form method="POST" action="{% url 'profil' %}">
+                    {% csrf_token %}
+                    <button type="submit" name="status" value="VIP">Antrag auf VIP-Status</button>
+                </form>
+            {% elif benutzer.rolle == "VIP" %}
+                <form method="POST" action="{% url 'profil' %}">
+                    {% csrf_token %}
+                    <button type="submit" name="status" value="Admin">Antrag auf Admin-Status</button>
+                </form>
+            {% else %}
+                <p>Du bist bereits Admin, daher kannst du keinen Antrag stellen.</p>
+            {% endif %}
+        </div>
+        <div class="standardDivclass">
+            <h2 class="hauptUeberschriftenclass">Bearbeiten</h2>
+            <form method="POST" action="{% url 'profilBearbeitung' %}">
+                {% csrf_token %}
+                <label>Vorname:</label>
+                <input type="text" name="vorname" value="{{ benutzer.vorname }}">
+    
+                <label>Nachname:</label>
+                <input type="text" name="nachname" value="{{ benutzer.nachname }}">
+    
+                <label>E-Mail:</label>
+                <input type="email" name="email" value="{{ benutzer.email }}">
+
+                <label>Passwort:</label>
+                <input type="passwort" name="passwort" value="{{ benutzer.passwort }}">
+    
+                <button type="submit" onclick="window.location.reload()">Bearbeiten</button>
+            </form>
+        </div>
+        <div class="standardDivclass">
+            <h2 class="hauptUeberschriftenclass">Developer kontaktieren</h2>
+            <form method="POST" action="{% url 'kontakt' %}">
+                {% csrf_token %}
+                <label for="betreff">Betreff:</label>
+                <input type="text" id="betreff" name="betreff" required>
+                
+                <label for="nachricht">Nachricht:</label>
+                <textarea id="nachricht" name="nachricht" rows="4" required></textarea>
+                <div>
+                    <button type="submit">Nachricht senden</button>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    {% include "ZeitApp/banner.html" %}
+</body>
+</html>

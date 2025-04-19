@@ -14,9 +14,27 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.urls import path
+from trashApp import views as tmpl_views
+
+urlpatterns = [
+    path('tr/login', tmpl_views.login_html, name='login'),
+    path('tr/registrieren', tmpl_views.registrieren_html, name='registrieren'),
+    path('tr/profil', tmpl_views.profil_html, name='profil'),
+    path('tr/profil/bearbeiten', tmpl_views.profil_bearbeiten, name='profilBearbeitung'),
+    path('tr/admin', tmpl_views.admin_html, name='admin'),
+    path('tr/dashboard', tmpl_views.dashboard_html, name='dashboard'),
+    path('tr/logout', tmpl_views.logout, name='logout'),
+    path('tr/kontakt/', tmpl_views.kontakt_email, name='kontakt'),
+]
+
+
+
+"""
 from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+"""

@@ -73,7 +73,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /*erster Wert=waagerechte Verschiebung; zweiter Wert=vertikale Verschiebung; dritter Wert=Schärferadius*/
 }
 
-.fuellbalkenWrapper {
+.fuellbalkenHintergrund {
     background-color: #eee;
     height: 20px;
     border-radius: 10px;
@@ -84,13 +84,11 @@ body {
 .fuellbalken {
     background-color: #1a27e0;
     height: 100%;
-    transition: width 0.3s ease;
 }
 
 .filterDropdown {
     padding: 8px;
     margin-bottom: 10px;
-    border-radius: 5px;
 }
 
 .statusanzeige {

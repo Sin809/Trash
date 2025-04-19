@@ -23,48 +23,50 @@
                 <option>Diese Woche</option>
                 <option>Diesen Monat</option>
             </select>
+            
             <div class="tabellenScrollerClass">
                 <table id="fuellstandTable">
                     <thead>
                         <tr>
                             <th>Mülltonne</th>
-                            <th>Füllstand</th>
+                            <th>Füllstand in %</th>
+                            <th>Füllstandbalken</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>Papier</td>
+                            <td>60%</td>
                             <td>
-                                <div class="fuellbalkenWrapper">
-                                    <div class="fuellbalken" style="width: 60%;">
-                                    </div>
+                                <div class="fuellbalkenHintergrund">
+                                    <div class="fuellbalken" style="width: 60%;"></div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Plastik</td>
+                            <td>40%</td>
                             <td>
-                                <div class="fuellbalkenWrapper">
-                                    <div class="fuellbalken" style="width: 40%;">
-                                    </div>
+                                <div class="fuellbalkenHintergrund">
+                                    <div class="fuellbalken" style="width: 40%;"></div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Restmüll</td>
+                            <td>80%</td>
                             <td>
-                                <div class="fuellbalkenWrapper">
-                                    <div class="fuellbalken" style="width: 80%;">
-                                    </div>
+                                <div class="fuellbalkenHintergrund">
+                                    <div class="fuellbalken" style="width: 80%;"></div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Uneindeutig</td>
+                            <td>25%</td>
                             <td>
-                                <div class="fuellbalkenWrapper">
-                                    <div class="fuellbalken" style="width: 25%; background-color: #f39c12;">
-                                    </div>
+                                <div class="fuellbalkenHintergrund">
+                                    <div class="fuellbalken" style="width: 25%; background-color: #f39c12;"></div>
                                 </div>
                             </td>
                         </tr>

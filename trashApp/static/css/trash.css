@@ -1,0 +1,226 @@
+html {
+    font-family: Arial;
+}
+
+body {
+    background-color: #f9f9fb;
+    color: #333;
+}
+
+.gesamtbereichclass {
+    display: flex;
+    flex-direction: column; /*Vertikale Stapelung der Inhalte*/
+    height: 100%;
+    margin-left: 50px; 
+    width: 100%; 
+}
+
+#navid {
+    background-color: #ededed;
+    color: #fff;
+    padding: 20px;
+    width: 200px;
+    height: 100%; 
+    position: fixed; 
+    left: 0px;
+    top: 10px;
+}
+
+#navUlid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column; /* Vertikale Ausrichtung der Links */
+    gap: 15px;
+}
+
+.navAclass {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.navAclass:hover {
+    color: #1a27e0;
+}
+
+#asideid {
+    background-color: #ededed; /*KopfBild: #030102 | PersonBild: #ededed*/
+    color: #fff;
+    margin-left: auto;
+    padding: 20px;
+    width: 300px;
+    height: 100%; 
+    position: fixed;
+    right: 0px; 
+    top: 10px;
+}
+
+.asideAclass {
+    color: #fff;
+    text-decoration: none;
+    }
+
+.standardDivclass {
+    max-width: 900px;
+    margin-top: 20px;
+    margin-left: 250px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /*erster Wert=waagerechte Verschiebung; zweiter Wert=vertikale Verschiebung; dritter Wert=Schärferadius*/
+}
+
+.hauptUeberschriftenclass {
+    margin-bottom: 10px;
+}
+
+.logoclass {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.asideLogoclass {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.asideBeschreibungclass {
+    border: #333 solid;
+    background-color: #fff;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #333; 
+    text-align: center;   
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-left: 0px;
+    margin-left: 0px;
+}                       
+
+input {
+    display: block;
+    margin-top: 5px;
+    width: 100%;
+}    
+
+button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    margin-top: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1a27e0;
+}
+
+.linkButton {
+    text-decoration: none; 
+    background-color: #333;
+    color: #fff;
+    border: none;
+    margin-top: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.linkButton:hover {
+    background-color: #1a27e0;
+}
+
+#beschreibungid {
+    flex: 1;
+}
+
+
+/*
+
+.versteckt {
+    display: none;
+}
+
+.versteckenclass {
+    cursor: pointer;
+}
+
+.versteckenclass:hover {
+    color: #1a27e0; 
+}
+*/
+
+#loginid {
+    margin-left: auto; 
+    margin-right: auto; 
+    width: 90%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#loginAsideid {
+    background-color: #ededed; /*KopfBild: #030102 | PersonBild: #ededed*/
+    color: #fff;
+    margin-left: auto;
+    padding: 15px;
+    width: 100%;
+    height: 100%; 
+    position: relative;
+    right: 0px; 
+    top: 10px;
+    box-sizing: border-box;
+}
+
+#logingesamtbereichid {
+    display: flex;
+    flex-direction: column; /*Vertikale Stapelung der Inhalte*/
+    height: 100%;
+    margin-left: 0; 
+    margin-top: 10px; 
+    width: 100%;
+    display: block;
+}
+
+
+/*Horizontale-Asurichtung*/
+@media (max-width: 1600px) {
+    #asideid {
+        position: relative; 
+        width: 100%;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    #navid {
+        position: relative;
+        width: 100%;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .standardDivclass {
+        margin-left: auto; 
+        margin-right: auto; 
+        width: 90%; 
+    }
+}

@@ -85,7 +85,7 @@
             <h3>Neuen Mülleimer hinzufügen</h3>
             <form method="POST">
                 {% csrf_token %}
-                <label for="muelleimername">name des Mülleimers:</label>
+                <label for="muelleimername">Name des Mülleimers:</label>
                 <input type="text" name="muelleimername" id="muelleimername" required />
                 <button type="submit">Hinzufügen</button>
             </form>

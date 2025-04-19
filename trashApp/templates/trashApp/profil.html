@@ -8,30 +8,14 @@
     <script type="text/javascript" src="{% static 'scripts/script.js' %}"></script>
 </head>
 <body>
-    {% include "ZeitApp/navigationsleiste.html" %}
+    {% include "trashApp/navigationsleiste.html" %}
     <div class="gesamtbereichclass">
         <div class="standardDivclass">
             <h2 class="hauptUeberschriftenclass">Mein Profil</h2>
                 
-            <p>Vorname: {{ benutzer.vorname }}</p>
+                <p>Vorname: {{ benutzer.vorname }}</p>
                 <p>Nachname: {{ benutzer.nachname }}</p>
                 <p>E-Mail: {{ benutzer.email }}</p>
-                <p>Matrikelnummer: {{ benutzer.matrikelnummer }}</p>
-                <p>Rolle: {{ benutzer.rolle }}</p>
-
-                {% if benutzer.rolle == "Einfacher Anwender" %}
-                <form method="POST" action="{% url 'profil' %}">
-                    {% csrf_token %}
-                    <button type="submit" name="status" value="VIP">Antrag auf VIP-Status</button>
-                </form>
-            {% elif benutzer.rolle == "VIP" %}
-                <form method="POST" action="{% url 'profil' %}">
-                    {% csrf_token %}
-                    <button type="submit" name="status" value="Admin">Antrag auf Admin-Status</button>
-                </form>
-            {% else %}
-                <p>Du bist bereits Admin, daher kannst du keinen Antrag stellen.</p>
-            {% endif %}
         </div>
         <div class="standardDivclass">
             <h2 class="hauptUeberschriftenclass">Bearbeiten</h2>
@@ -68,6 +52,6 @@
         </div>
         
     </div>
-    {% include "ZeitApp/banner.html" %}
+    {% include "trashtApp/banner.html" %}
 </body>
 </html>

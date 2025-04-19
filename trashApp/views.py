@@ -21,6 +21,9 @@ def profil_bearbeiten(request):
 def dashboard_html(request):
     return render(request, 'trashApp/dashboard.html')
 
+def admin_html(request):
+    return render(request, 'trashApp/admin.html')
+
 def logout(request):
     return redirect('login')
 

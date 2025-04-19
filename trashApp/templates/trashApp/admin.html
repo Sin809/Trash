@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="de">
+<head> 
+    <meta charset="UTF-8">
+    <title>Admin-Verwaltung</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'scripts/script.js' %}"></script>
+</head>
+<body>
+    {% include "ZeitApp/navigationsleiste.html" %}
+    <div class="gesamtbereichclass">
+        <div class="standardDivclass">
+            <h2 class="hauptUeberschriftenclass">Admin-Verwaltung</h2>
+            <h3 class="versteckenclass" onclick="versteckeBenutzer('benutzerid')">Benutzer-Übersicht</h3>
+            <table id="benutzerid">
+                <thead>
+                    <tr>
+                        <th>Benutzername</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td>max muster</td>
+                            <td>sperren</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">Es gibt keine Benutzer.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="standardDivclass">
+            <h3 class="versteckenclass" onclick="versteckeMuelleimer('muelleimerid')">Modul-Übersicht</h3>
+            <table id="muelleimerid">
+                <thead>
+                    <tr>
+                        <th>Mülleimername</th>
+                        <th>Mülleimer-ID</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                            <td>Plastik</td>
+                            <td>Papier</td>
+                            <td>Restmüll</td>
+                            <td>Uneindeutig</td>
+                            <td>
+                                <a class="linkButton" >Entfernen</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">Es gibt derzeit keine Mülleimer.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Neuen Mülleimer hinzufügen</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="muelleimername">name des Mülleimers:</label>
+                <input type="text" name="muelleimername" id="muelleimername" required />
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </div>
+    </div>
+    {% include "trashApp/banner.html" %}
+</body>
+</html>

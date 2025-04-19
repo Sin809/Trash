@@ -23,6 +23,7 @@ urlpatterns = [
     path('tr/profil', tmpl_views.profil_html, name='profil'),
     path('tr/profil/bearbeiten', tmpl_views.profil_bearbeiten, name='profilBearbeitung'),
     path('tr/dashboard', tmpl_views.dashboard_html, name='dashboard'),
+    path('tr/admin', tmpl_views.admin_html, name='admin'),
     path('tr/logout', tmpl_views.logout, name='logout'),
     path('tr/kontakt/', tmpl_views.kontakt_email, name='kontakt'),
 ]

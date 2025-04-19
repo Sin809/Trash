@@ -22,7 +22,7 @@ def dashboard_html(request):
     return render(request, 'trashApp/dashboard.html')
 
 def logout(request):
-    return redirect('trashApp/login.html')
+    return redirect('login')
 
 def kontakt_email(request):
     return HttpResponse("""

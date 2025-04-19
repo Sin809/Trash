@@ -3,7 +3,7 @@ html {
 }
 
 body {
-    background-color: #f9f9fb;
+    background-color: #34495e;
     color: #333;
 }
 
@@ -16,7 +16,7 @@ body {
 }
 
 #navid {
-    background-color: #ededed;
+    background-color: #fefdfe;
     color: #fff;
     padding: 20px;
     width: 200px;
@@ -47,7 +47,7 @@ body {
 }
 
 #asideid {
-    background-color: #ededed; /*KopfBild: #030102 | PersonBild: #ededed*/
+    background-color: #fefdfe; /*MonsterBild: #fefdfe*/
     color: #fff;
     margin-left: auto;
     padding: 20px;

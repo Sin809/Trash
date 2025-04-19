@@ -73,6 +73,39 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /*erster Wert=waagerechte Verschiebung; zweiter Wert=vertikale Verschiebung; dritter Wert=Schärferadius*/
 }
 
+.fuellbalkenWrapper {
+    background-color: #eee;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.fuellbalken {
+    background-color: #1a27e0;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.filterDropdown {
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.statusanzeige {
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    width: fit-content;
+    margin-top: 10px;
+}
+
+.tabellenScrollerClass {
+    overflow-x: auto;
+width: 100%;
+}
+
 .hauptUeberschriftenclass {
     margin-bottom: 10px;
 }
@@ -148,12 +181,40 @@ button:hover {
     background-color: #1a27e0;
 }
 
+#textberichterstellenid {
+    display: flex;
+    gap: 15px;
+    margin: 0;
+}
+
 #beschreibungid {
     flex: 1;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+    margin-left: 0px;  
+}
 
-/*
+table, th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+td {
+    max-width: 300px;
+    overflow-wrap: break-word;
+}
+
+
+thead {
+    background-color: #333;
+    color: white;
+}
 
 .versteckt {
     display: none;
@@ -166,7 +227,6 @@ button:hover {
 .versteckenclass:hover {
     color: #1a27e0; 
 }
-*/
 
 #loginid {
     margin-left: auto; 
@@ -201,7 +261,6 @@ button:hover {
     display: block;
 }
 
-
 /*Horizontale-Asurichtung*/
 @media (max-width: 1600px) {
     #asideid {
@@ -218,9 +277,22 @@ button:hover {
         box-sizing: border-box;
     }
 
+    .gesamtbereichclass {
+        margin-left: 0; 
+        margin-top: 10px; 
+        width: 100%;
+        display: block;
+    }
+
+    table {
+        width: 100%; 
+        margin-top: 20px;
+    }
+
     .standardDivclass {
         margin-left: auto; 
         margin-right: auto; 
         width: 90%; 
     }
 }
+

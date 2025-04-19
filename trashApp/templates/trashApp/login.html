@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
+</head>
+<body>
+    <div id="logingesamtbereichid">
+        <div id="loginid">
+            <h2 class="hauptUeberschriftenclass">Login</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <label>Matrikelnummer:</label>
+                <input type="text" name="matrikelnummer" required>
+
+                <label>Passwort:</label>
+                <input type="password" name="passwort" required>
+
+                <button type="submit">Einloggen</button>
+            </form>
+            
+            
+            <form action="{% url 'registrieren' %}" method="get">
+                <button type="submit">Jetzt registrieren</button>
+            </form>
+        </div>
+        {% include "ZeitApp/loginBanner.html" %}
+    </div>
+</body>
+</html>

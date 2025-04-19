@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrierung</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
+</head>
+<body>
+    <div class="standardDivclass">
+        <h2 class="hauptUeberschriftenclass">Registrieren</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <label>Vorname:</label>
+            <input type="text" name="vorname" required>
+
+            <label>Nachname:</label>
+            <input type="text" name="nachname" required>
+
+            <label>Matrikelnummer:</label>
+            <input type="text" name="matrikelnummer" required>
+
+            <label>E-Mail:</label>
+            <input type="email" name="email" required>  
+
+            <label>Passwort:</label>
+            <input type="password" name="passwort" required>
+
+            <label>Passwort wiederholen:</label>
+            <input type="password" name="passwort_wiederholen" required>
+
+            <button type="submit">Registrieren</button>
+        </form>
+
+        <form action="{% url 'login' %}" method="get">
+            <button type="submit">Zurück zum Login</button>
+        </form>
+    </div>
+    {% include "ZeitApp/banner.html" %}
+
+</body>
+</html>

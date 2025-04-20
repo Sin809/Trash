@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<benutzerliste>
+    <benutzer id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
+        <benutzername>Max</benutzername>
+        <email>schambach_andre@teams.hs-ludwigsburg.de</email>
+        <passwort>123</passwort>
+        <rolle>user</rolle>
+    </benutzer>
+</benutzerliste>

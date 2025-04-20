@@ -58,6 +58,11 @@ def registrieren_html(request):
 
     return render(request, 'trashApp/registrieren.html')
 
+#A
+def benutzer_ist_eingeloggt(request):
+    if not request.session.get('uuid'):
+        return redirect('login')
+    return None
 
 #A    
 def login_html(request):
@@ -68,7 +73,8 @@ def login_html(request):
         benutzerliste = lade_benutzer()
 
         for benutzer in benutzerliste:
-            if benutzer.find('email').text == benutzername and benutzer.find('passwort').text == passwort:
+            if benutzer.find('benutzername').text == benutzername and benutzer.find('passwort').text == passwort:
+                request.session['uuid'] = benutzer.attrib['id']
                 rolle = benutzer.find('rolle').text
                 if rolle == 'admin':
                     return redirect('admin')
@@ -87,12 +93,17 @@ def profil_bearbeiten(request):
     return render(request, 'trashApp/profil.html')
 
 def dashboard_html(request):
+    check = benutzer_ist_eingeloggt(request)
+    if check: return check
     return render(request, 'trashApp/dashboard.html')
 
 def admin_html(request):
+    check = benutzer_ist_eingeloggt(request)
+    if check: return check
     return render(request, 'trashApp/admin.html')
 
 def logout(request):
+    request.session.flush()
     return redirect('login')
 
 def kontakt_email(request):

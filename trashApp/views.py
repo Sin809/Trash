@@ -6,8 +6,9 @@ from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-#A
 XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
+
+#A
 class Benutzer:
     def __init__(self, benutzername, email, passwort, rolle='user'):
         self.id = str(uuid.uuid4())

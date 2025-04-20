@@ -6,4 +6,4 @@
         <passwort>123</passwort>
         <rolle>user</rolle>
     </benutzer>
-</benutzerliste>
+<benutzer id="0f7f6cd8-350c-4d54-9e9b-37def97da98a"><benutzername>Mustermann</benutzername><email>schambach_andre@teams.hs-ludwigsburg.de</email><passwort>123</passwort><rolle>user</rolle></benutzer></benutzerliste>

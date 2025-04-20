@@ -24,7 +24,7 @@ class Benutzer:
 #A    
 def lade_benutzer():
     if not os.path.exists(XML_PATH):
-        return []
+        return [] #leere liste, damit login_html etwas zum druchsuchen hat, falls es noch keine benutzer geben sollte
     tree = ET.parse(XML_PATH)
     root = tree.getroot()
     return root.findall('benutzer')
@@ -48,8 +48,8 @@ def registrieren_html(request):
             root = tree.getroot()
 
         for benutzer in root.findall('benutzer'):
-            if benutzer.find('email').text == email or benutzer.find('benutzername').text == benutzername:
-                return HttpResponse("Benutzername oder E-Mail bereits registriert")
+            if benutzer.find('benutzername').text == benutzername:
+                return HttpResponse("Benutzername bereits registriert")
 
         neuer_benutzer = Benutzer(benutzername, email, passwort)#neue user klasse anlegen
         root.append(neuer_benutzer.als_xml_speichern())# klasse als xml speichern

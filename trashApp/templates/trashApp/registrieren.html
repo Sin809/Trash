@@ -11,11 +11,8 @@
         <h2 class="hauptUeberschriftenclass">Registrieren</h2>
         <form method="POST">
             {% csrf_token %}
-            <label>Vorname:</label>
-            <input type="text" name="vorname" required>
-
-            <label>Nachname:</label>
-            <input type="text" name="nachname" required>
+            <label>Benutzername:</label>
+            <input type="text" name="benutzername" required>
 
             <label>E-Mail:</label>
             <input type="email" name="email" required>  
@@ -34,6 +31,5 @@
         </form>
     </div>
     {% include "trashApp/banner.html" %}
-
 </body>
 </html>

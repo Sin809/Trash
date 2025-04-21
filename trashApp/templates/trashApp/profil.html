@@ -13,19 +13,15 @@
         <div class="standardDivclass">
             <h2 class="hauptUeberschriftenclass">Mein Profil</h2>
                 
-                <p>Vorname: {{ benutzer.vorname }}</p>
-                <p>Nachname: {{ benutzer.nachname }}</p>
+                <p>Benutzername: {{ benutzer.benutzername }}</p>
                 <p>E-Mail: {{ benutzer.email }}</p>
         </div>
         <div class="standardDivclass">
             <h2 class="hauptUeberschriftenclass">Bearbeiten</h2>
             <form method="POST" action="{% url 'profilBearbeitung' %}">
                 {% csrf_token %}
-                <label>Vorname:</label>
-                <input type="text" name="vorname" value="{{ benutzer.vorname }}">
-    
-                <label>Nachname:</label>
-                <input type="text" name="nachname" value="{{ benutzer.nachname }}">
+                <label>Benutzername:</label>
+                <input type="text" name="vorname" value="{{ benutzer.benutzername }}">
     
                 <label>E-Mail:</label>
                 <input type="email" name="email" value="{{ benutzer.email }}">

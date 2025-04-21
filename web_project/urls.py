@@ -28,7 +28,7 @@ urlpatterns = [
     path('tr/kontakt/', tmpl_views.kontakt_email, name='kontakt'),
 ]
 
-
+ 
 
 """
 from django.contrib import admin

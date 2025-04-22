@@ -81,9 +81,10 @@ def login_html(request):
         benutzer = root.xpath(f"benutzer[benutzername='{benutzername}' and passwort='{passwort}']")
 
         if benutzer:
-            benutzer = benutzer[0]
-            request.session['uuid'] = benutzer.attrib['id']
-            rolle = benutzer.find('rolle').text
+            uuid = benutzer[0].xpath('@id')[0] #xpath abfragen geben immer listen als antwort, deswegen [0]
+            rolle = benutzer[0].xpath('rolle/text()')[0] 
+
+            request.session['uuid'] = uuid
             if rolle == 'admin':
                 return redirect('admin')
             else:
@@ -98,10 +99,10 @@ def profil_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check: return check
 
-    uuid_value = request.session.get('uuid')
+    uuid_wert = request.session.get('uuid')
     tree = ET.parse(XML_PATH)
     root = tree.getroot()
-    benutzer_element = root.xpath(f"benutzer[@id='{uuid_value}']")
+    benutzer_element = root.xpath(f"benutzer[@id='{uuid_wert}']")
 
     if not benutzer_element:
         return HttpResponse("Benutzer nicht gefunden")

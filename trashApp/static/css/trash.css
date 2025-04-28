@@ -122,7 +122,7 @@ width: 100%;
 
 .asideBeschreibungclass {
     border: #333 solid;
-    background-color: #fefdfe;
+    background-color: #fff;
     border-radius: 10px;
     font-size: 12px;
     color: #333; 
@@ -237,7 +237,7 @@ thead {
 }
 
 #loginAsideid {
-    background-color: #ededed; /*KopfBild: #030102 | PersonBild: #ededed*/
+    background-color: #fefdfe; /*MonsterBild: #fefdfe*/
     color: #fff;
     margin-left: auto;
     padding: 15px;

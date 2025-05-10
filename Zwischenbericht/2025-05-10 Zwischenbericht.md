@@ -50,6 +50,16 @@ Ziel ist eine stabile Verbindung zwischen Weboberfläche, Django-Backend und den
 ## 🔌 Hardware
 
 ### Aktueller Stand:
+Herr Lang hatte beim Projekt verschiedene Aufgaben. Die zentralste Aufgabe, welche er zugeteilt bekommen hatte, war die Hardware Beschaffung. Für diese informierte er sich vorab über verschiedenste Bauteile, welche für unser Projekt von Relevanz sein könnten. Wir entschieden uns Letzten Endes für eine Erkennung mithilfe von Kameras in Kombination mit „Computer-Vision“, da anderweitige Sensorik nicht realistisch nutzbar war oder finanziell zu belastend gewesen wäre.
+Vor der Hardwarebeschaffung entwarf er eine grobe Skizze über den Aufbau des Konstrukts. Diese wurde im Anschluss mit den Gedanken aller Beteiligten mehrfach überarbeitet, sodass die Konstruktion stark vereinfacht werden konnte und die Funktionalität durch simple Anpassungen verbessert wurde. Ursprünglich war ein System angedacht, welches aus mehreren Fließbändern bestehen sollte und mithilfe von Schranken die Sortierung durchführen sollte (Siehe Abb.1).
+![Skizze](https://i.postimg.cc/jj1NVymB/Screenshot-20250110-135454-Infinite-Painter.jpg)
+
+Diese Konstruktion wurde verworfen und verbessert, da die Sorge bestand, dass die Schranken nicht ausreichen, um die Abfälle den jeweiligen Fließbändern zuzuweisen. Stattdessen wurde das Konzept mit Kolben verbessert. Diese sollten die Befördernisse direkt auf das jeweilige weitere Fließband schieben, wie in der folgenden Abbildung zu sehen.
+![Neuer Entwurf](https://i.postimg.cc/Y9j50BXh/Medien.png)
+ 
+Dies sollte mithilfe von Elektromotoren geschehen, was jedoch das Risiko bot, dass zwischen dem Fließband und dem Kolben die Befördernisse stecken bleiben. Aus diesem Grund überlegten wir eine Option ohne Kolben und Schranken. Wir reduzierten das Konstrukt auf die nötigsten Teile und hatten nurnoch zwei Fließbänder, wobei auf dem Ersten der Abfall erkannt wird und im Anschluss auf das zweite Fließband fällt. Das zweite Fließband hatte noch die Sonderfunktion mithilfe eines Servo-Motors sich auszurichten, um in verschiedene Behälter zu zeigen, sodass die Fördermittel von alleine in die jeweilige Tonne fielen.
+Zusätzlich dazu wollten wir die Fließbänder mit den Motoren verbinden und benötigten eine Art Konstruktion hierfür. Herr Lang hatte Zugriff zu einem 3D-Drucker und einem AutoCAD Programm, womit er erste Modelle für die Fließbänder erstellte. Um diese an unsere Komponenten anzupassen, wurden jedoch die Hardware Komponenten benötigt. Auch die Beschaffung führte Herr Lang durch. Nachdem wir unseren Bedarf festgestellt hatten durch unsere Überlegungen stellte er eine Materialliste zusammen. Beim Eintreffen der Komponenten konnten diese erfolgreich ausgemessen werden und mithilfe der Motoren eine Halterung für die Achsen der Fließbänder modelliert werden. Diese wurden jedoch noch nicht ausgedruckt.
+![Modell](https://i.postimg.cc/RVWLDbjv/Bild.png)
 
 ### Nächste Schritte:
 

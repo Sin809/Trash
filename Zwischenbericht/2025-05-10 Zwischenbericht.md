@@ -2,17 +2,37 @@
 **Stand:** 11.05.2025  
 **Team:** Marius Mattes, Felix Lang, Sinan Licina, Andre Schambach
 
----
 
 ## 🖥️ Frontend
 
 ### Aktueller Stand:
 
+Modularer Aufbau mit Django-Templates:
+Durch die Verwendung von {% include %}-Anweisungen für die Navigationsleiste und das Banner wird der HTML-Code übersichtlich und wiederverwendbar gestaltet.
+
+Interaktive Benutzer- und Mülleimerverwaltung:
+Admins sollen Benutzer einsehen und per Klick sperren können. Ebenso soll man Mülleimer hinzufügen oder entfernen können. Diese Funktionen sind in Tabellen mit interaktiven Buttons eingebunden.
+![Admin-Verwaltungs-Seite](https://i.postimg.cc/gk9x5j9J/Screenshot-2025-05-10-105711.png)
+
+Füllstandsanzeige mit Fortschrittsbalken:
+Die Füllstände der Mülleimer soll grafisch durch Balken dargestellt werden, die den aktuellen Prozentsatz visualisieren. Eine Dropdown-Auswahl erlaubt die Filterung nach Zeitraum (z. B. heute, diese Woche).
+
+Logbuch und Systemstatus in Echtzeit:
+Ein Logbuch soll die letzten Sortiervorgänge mit Zeitstempel zeigen. Der Systemstatus soll informieren, ob der Raspberry Pi online ist.
+![Dashboard-Seite](https://i.postimg.cc/t4bQLQCW/Screenshot-2025-05-10-110031.png)
+
+Profil- und Kontaktbereich:
+Benutzer können ihre Profildaten wie Name, E-Mail und Passwort bearbeiten. Über ein integriertes Kontaktformular können sie Nachrichten direkt an die Developer senden, die per E-Mail weitergeleitet werden.
+![Profil-Seite](https://i.postimg.cc/1tsKQBVW/Screenshot-2025-05-10-110239.png)
+
 
 ### Nächste Schritte:
 
+Live-Feed der Müllsortierung:
+Ein Echtzeit-Stream der Kamera soll zukünftig im Frontend eingebettet werden, um den Sortiervorgang live mitzuverfolgen. So können Benutzer direkt beobachten, wie der Müll erkannt und zugeordnet wird – integriert auf der Dashboard-Seite.
 
----
+Fehlermeldungen und Erfolgshinweise anzeigen:
+Rückmeldungen an den Benutzer bei erfolgreichen Änderungen oder Eingabefehlern sollen deutlicher gemacht werden. Dies soll durch Pop-ups erfolgen, die visuelle Hinweise zur Fehlerbehebung oder Erfolgsmeldungen liefern.
 
 ## 🛠️ Backend
 

@@ -1,7 +1,7 @@
 import os
 import uuid
 import smtplib
-from lxml import etree as ET
+from lxml import etree as ET #alternative zu "xml.etree.ElementTree"
 from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -53,8 +53,8 @@ def registrieren_html(request):
         if root.xpath(f"benutzer[benutzername='{benutzername}' or email='{email}']"):
             return HttpResponse("Benutzername oder E-Mail bereits registriert")
 
-        neuer_benutzer = Benutzer(benutzername, email, passwort)#neue user klasse anlegen
-        root.append(neuer_benutzer.als_xml_speichern())# klasse als xml speichern
+        neuer_benutzer = Benutzer(benutzername, email, passwort) #neue user klasse anlegen
+        root.append(neuer_benutzer.als_xml_speichern())  #klasse als xml speichern
         tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('login')
 

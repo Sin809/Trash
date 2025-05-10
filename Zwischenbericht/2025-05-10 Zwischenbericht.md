@@ -69,7 +69,31 @@ Zusätzlich dazu wollten wir die Fließbänder mit den Motoren verbinden und ben
 
 ### Aktueller Stand:
 
-### Nächste Schritte:
+Zu Beginn des Projekts wurde besonderes Augenmerk auf eine strukturierte und effiziente Organisation gelegt. In diesem Zusammenhang wurden folgende Maßnahmen umgesetzt:
+
+### 1. Einrichtung von GitHub
+
+Direkt zu Projektbeginn wurde ein zentrales GitHub-Repository eingerichtet, das als gemeinsame Arbeitsplattform für alle Teammitglieder dient. Die GitHub-Struktur unterstützt die Versionskontrolle, erleichtert die Zusammenarbeit und stellt sicher, dass alle Änderungen nachvollziehbar dokumentiert sind.
+
+### 2. Lokalen Server aufsetzen
+
+Jedes Teammitglied hat sich einen eigenen lokalen Server aufgesetzt. Dies ermöglicht individuelles Arbeiten sowie parallele Entwicklung, ohne sich gegenseitig zu blockieren. Die Server sind über GitHub verbunden, sodass jeder den aktuellen Stand zur Verfügung hat.  
+In GitHub war es lediglich notwendig, eine `.gitignore`-Datei anzulegen und das virtuelle Environment zu ignorieren, da dieses zu groß ist.
+
+### 3. Agiles Vorgehen mit Kanban und Sprints
+
+Die Projektorganisation folgt einem agilen Vorgehensmodell mit Hilfe eines Kanban-Boards auf GitHub. Aufgaben werden dort transparent verwaltet und in einzelnen Sprints bearbeitet.  
+Der erste Sprint wurde bereits erfolgreich abgeschlossen. Dabei konnten alle geplanten Aufgaben termingerecht umgesetzt werden. Das Kanban-Board hat sich bisher als effektives Mittel zur Aufgabenverteilung und zum Fortschrittstracking bewährt.
+
+---
+
+## Nächste Schritte
+
+- **Planung und Durchführung von Sprint 2**  
+Aufbauend auf den Erfahrungen aus Sprint 1 werden nun die Aufgaben für Sprint 2 priorisiert und verteilt. Die Erstellung der genauen Aufgaben und Ziele wird an diesem Wochenende vorgenommen.
+
+
+
 
 ---
 

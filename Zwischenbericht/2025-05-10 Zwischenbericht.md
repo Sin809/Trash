@@ -99,4 +99,3 @@ Aufbauend auf den Erfahrungen aus Sprint 1 werden nun die Aufgaben für Sprint 2
 
 **Bemerkungen / Offene Punkte:**
 
-![Testbild](Test.png)

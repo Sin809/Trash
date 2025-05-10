@@ -65,4 +65,4 @@ Ziel ist eine stabile Verbindung zwischen Weboberfläche, Django-Backend und den
 
 **Bemerkungen / Offene Punkte:**
 
-![Testbild](Bilder/Test.png)
+![Testbild](Test.png)

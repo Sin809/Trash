@@ -81,9 +81,10 @@ Dies sollte mithilfe von Elektromotoren geschehen, was jedoch das Risiko bot, da
 Zusätzlich dazu wollten wir die Fließbänder mit den Motoren verbinden und benötigten eine Art Konstruktion hierfür. Herr Lang hatte Zugriff zu einem 3D-Drucker und einem AutoCAD Programm, womit er erste Modelle für die Fließbänder erstellte. Um diese an unsere Komponenten anzupassen, wurden jedoch die Hardware Komponenten benötigt. Auch die Beschaffung führte Herr Lang durch. Nachdem wir unseren Bedarf festgestellt hatten durch unsere Überlegungen stellte er eine Materialliste zusammen. Beim Eintreffen der Komponenten konnten diese erfolgreich ausgemessen werden und mithilfe der Motoren eine Halterung für die Achsen der Fließbänder modelliert werden. Diese wurden jedoch noch nicht ausgedruckt.
 ![Modell](https://i.postimg.cc/RVWLDbjv/Bild.png)
 
-### Nächste Schritte:
+Außerdem wurde ein Grundcode entworfen, um Schrittmotoren anzusteuern. Diese sollen für die Fließbänder eingesetzt werden, da man diese so ansteuern kann, dass man eine Bestimmte Umdrehungszahl ausführt. 
 
----
+### Nächste Schritte:
+Als nächstes muss betrachtet werden, wie Computer-Vision genutzt werden kann, um in Zukunft die Fördernisse zu sortieren. Ebenso sollte das Konstrukt ausgedruckt werden mithilfe des 3D-Druckers.
 
 ## 📋 Projektmanagement
 

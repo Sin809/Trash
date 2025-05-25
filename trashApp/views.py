@@ -6,6 +6,14 @@ from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
+#A noch unklar
+from django.core.files.storage import default_storage
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.conf import settings
+
+
 XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
 
 #A
@@ -205,3 +213,47 @@ def email_senden(emails, betreff, inhalt):
 # Wiederherstellung: schambach_andre@teams.hs-ludwigsburg.de
 # App: chronoszeitbuchung
 # App-Passwort: wmrh ayvh aprj vllx
+
+#A
+UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+@csrf_exempt
+def api_upload(request):
+    if request.method == "POST":
+        bild = request.FILES.get("bild")
+        label = request.POST.get("label", "Unbekannt")
+
+        if not bild:
+            return JsonResponse({"error": "Kein Bild erhalten"}, status=400)
+
+        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+        os.makedirs(speicherpfad, exist_ok=True)
+
+        dateiname = f"{label}_{bild.name}"
+        zielpfad = os.path.join(speicherpfad, dateiname)
+
+        with open(zielpfad, "wb") as f:
+            for chunk in bild.chunks():
+                f.write(chunk)
+
+        return JsonResponse({"status": "erfolgreich", "filename": dateiname})
+
+    return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+#A
+def klassifizierte_bilder_html(request):
+    pfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+    bilder = []
+
+    if os.path.exists(pfad):
+        for datei in sorted(os.listdir(pfad), reverse=True):
+            if datei.lower().endswith((".jpg", ".jpeg", ".png")):
+                bilder.append({
+                    "url": f"/static/klassifikation/{datei}",
+                    "label": datei.split("_")[0]
+                })
+
+    return render(request, "trashApp/klassifizierte_bilder.html", {"bilder": bilder})
+

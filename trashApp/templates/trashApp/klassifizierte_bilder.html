@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Klassifizierte Bilder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .bild-block {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .bild-block img {
+            width: 300px;
+            margin-right: 20px;
+            border: 1px solid #ccc;
+        }
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Klassifizierte Müllbilder</h1>
+
+    {% if bilder %}
+        {% for eintrag in bilder %}
+            <div class="bild-block">
+                <img src="{{ eintrag.url }}" alt="Bild">
+                <div class="label">Kategorie: {{ eintrag.label }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Keine Bilder vorhanden.</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">Zurück zum Dashboard</a></p>
+</body>
+</html>

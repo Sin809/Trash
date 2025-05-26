@@ -113,8 +113,8 @@
                                  <td>
                                     <form method="POST" action="{% url 'eintragLoeschen' %}">
                                         {% csrf_token %}
-                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
-                                        <button type="submit" name="loeschen">Löschen</button>
+                                        <input type="hidden" name="loeschen" value="{{ eintrag.zeit }}">
+                                        <button type="submit">Löschen</button>
                                     </form>
                                 </td>
                             </tr>

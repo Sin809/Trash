@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/upload/', tmpl_views.api_upload, name='api_upload'),
     path('tr/klassifizierte-bilder/', tmpl_views.klassifizierte_bilder_html, name='klassifizierte_bilder'),
     path('tr/logbuch-eintrag/', tmpl_views.logbuchEintragHtml, name='logbuch_eintrag'),
+    path('tr/logbuch/loeschen/', tmpl_views.eintragLoeschen, name='eintragLoeschen'),
 ]
 
  

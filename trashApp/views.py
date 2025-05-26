@@ -275,9 +275,9 @@ def logbuchEintragHtml(request):
 #S
 def eintragLoeschen(request):
     if request.method == 'POST':
-        logbucheintragloeschen = request.POST.get('loeschen') 
-
+        logbucheintragloeschen = request.POST.get('loeschen')
         if not logbucheintragloeschen:
+            print("Kein zu löschender Zeitstempel übergeben")
             return redirect('dashboard')
 
         if os.path.exists(LOGBUCH_XML_PATH):
@@ -285,14 +285,26 @@ def eintragLoeschen(request):
             root = tree.getroot()
 
             uuid_value = request.session.get('uuid')
-            benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+            print(f"UUID aus Session: {uuid_value}")
 
-            if benutzer_element is not None:
-                for eintrag in benutzer_element.findall('eintrag'):
-                    if eintrag.findtext('zeit') == logbucheintragloeschen:
-                        benutzer_element.remove(eintrag)
-                        tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
-                        break
+            benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+            if benutzer_element is None:
+                print("Benutzer mit dieser UUID nicht gefunden")
+                return redirect('dashboard')
+
+            gefunden = False
+            for eintrag in benutzer_element.findall('eintrag'):
+                zeit_text = eintrag.findtext('zeit').strip()
+                print(f"Prüfe Eintrag mit Zeit: {zeit_text}")
+                if zeit_text == logbucheintragloeschen.strip():
+                    benutzer_element.remove(eintrag)
+                    tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+                    print("Eintrag gelöscht!")
+                    gefunden = True
+                    break
+
+            if not gefunden:
+                print("Eintrag mit diesem Zeitstempel nicht gefunden")
 
         return redirect('dashboard')
 

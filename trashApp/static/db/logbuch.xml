@@ -1,11 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <logbuch>
   <eintrag>
-    <zeit>26.05.2025 12:58</zeit>
+    <zeit>26.05.2025 13:03</zeit>
     <art>Papier</art>
   </eintrag>
   <eintrag>
-    <zeit>26.05.2025 12:59</zeit>
-    <art>Restmüll</art>
+    <zeit>26.05.2025 13:03</zeit>
+    <art>Papier</art>
+  </eintrag>
+  <eintrag>
+    <zeit>26.05.2025 13:03</zeit>
+    <art>Plastik</art>
   </eintrag>
 </logbuch>

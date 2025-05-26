@@ -28,45 +28,38 @@
                 <table id="fuellstandTable">
                     <thead>
                         <tr>
-                            <th>Mülltonne</th>
-                            <th>Füllstand in %</th>
-                            <th>Füllstandbalken</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
                             <td>Papier</td>
-                            <td>60%</td>
+                            <td>{{ fuellstaende.papier }}%</td>
                             <td>
-                                <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: 60%;"></div>
+                                <div class="fuellbalkenHintergrund"> <!--längerer balkan und ab 80 rot-->
+                                    <div class="fuellbalken" style="width: {{ fuellstaende.papier }}%;"></div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Plastik</td>
-                            <td>40%</td>
+                            <td>{{ fuellstaende.plastik }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: 40%;"></div>
+                                    <div class="fuellbalken" style="width: {{ fuellstaende.plastik }}%;"></div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Restmüll</td>
-                            <td>80%</td>
+                            <td>{{ fuellstaende.restmüll }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: 80%;"></div>
+                                    <div class="fuellbalken" style="width: {{ fuellstaende.restmüll }}%;"></div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Uneindeutig</td>
-                            <td>25%</td>
+                            <td>{{ fuellstaende.uneindeutig }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: 25%; background-color: #f39c12;"></div>
+                                    <div class="fuellbalken" style="width: {{ fuellstaende.uneindeutig }}%; background-color: #f39c12;"></div>
                                 </div>
                             </td>
                         </tr>
@@ -76,19 +69,46 @@
         </div>
 
         <div class="standardDivclass">
+            <h2 class="hauptUeberschriftenclass">Logbuch-Eingabe</h2>
+            <form method="POST" action="{% url 'logbuch_eintrag' %}">
+                {% csrf_token %}
+                <label for="art">Müllerkennung simulieren:</label>
+                <select name="art" id="art">
+                    <option>Papier</option>
+                    <option>Plastik</option>
+                    <option>Restmüll</option>
+                    <option>Uneindeutig</option>
+                </select>
+                <button type="submit">Eintrag hinzufügen</button>
+            </form>
+        </div>
+        
+        <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeLogbuch('logbuchid')">Logbuch</h2>
             <div class="tabellenScrollerClass">
                 <table id="logbuchid">
                     <thead>
                         <tr>
                             <th>Zeitstempel</th>
-                            <th>Aktion</th>
+                            <th>Art</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>19.04.2025 11:42</td><td>Plastik – korrekt sortiert</td></tr>
-                        <tr><td>19.04.2025 11:40</td><td>Papier – korrekt sortiert</td></tr>
-                        <tr><td>19.04.2025 11:38</td><td>Uneindeutig – Sortierfehler</td></tr>
+                        {% for eintrag in logbuch_eintraege %}
+                            <tr>
+                                <td>{{ eintrag.zeit }}</td>
+                                <td>{{ eintrag.art }}</td>
+                                <td>
+                                    <!--<form method="POST" action style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">-->
+                                        <button type="submit">Löschen</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="3">Keine Einträge vorhanden</td></tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

@@ -6,6 +6,14 @@ from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
+#A noch unklar
+from django.core.files.storage import default_storage
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.conf import settings
+
+
 XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
 
 #A
@@ -211,3 +219,61 @@ def email_senden(emails, betreff, inhalt):
 # Wiederherstellung: schambach_andre@teams.hs-ludwigsburg.de
 # App: chronoszeitbuchung
 # App-Passwort: wmrh ayvh aprj vllx
+
+#A
+UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+@csrf_exempt
+def api_upload(request):
+    if request.method == "POST":
+        bild = request.FILES.get("bild")
+
+        if not bild:
+            return JsonResponse({"error": "Kein Bild erhalten"}, status=400)
+
+        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+        os.makedirs(speicherpfad, exist_ok=True)
+
+        zielpfad = os.path.join(speicherpfad, bild.name)
+
+        with open(zielpfad, "wb") as datei:
+            datei.write(bild.read())
+
+        return JsonResponse({"status": "erfolgreich", "filename": bild.name})
+
+    return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+
+def klassifizierte_bilder_html(request):
+    pfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+    bilder = []
+
+    if os.path.exists(pfad):
+        for datei in sorted(os.listdir(pfad), reverse=True):
+            if datei.lower().endswith((".jpg", ".jpeg", ".png")):
+                name_ohne_endung = os.path.splitext(datei)[0]  # z. B. 20250526_131547_Papier
+                teile = name_ohne_endung.split("_")
+
+                if len(teile) >= 3:
+                    datum_raw = teile[0]     # 20250526
+                    uhrzeit_raw = teile[1]   # 131547
+                    label = teile[2]         # Papier
+
+                    datum = f"{datum_raw[6:8]}.{datum_raw[4:6]}.{datum_raw[0:4]}"
+                    uhrzeit = f"{uhrzeit_raw[0:2]}:{uhrzeit_raw[2:4]}:{uhrzeit_raw[4:6]}"
+                else:
+                    datum = "Unbekannt"
+                    uhrzeit = "Unbekannt"
+                    label = "Unbekannt"
+
+                bilder.append({
+                    "url": f"/static/klassifikation/{datei}",
+                    "label": label,
+                    "datum": datum,
+                    "uhrzeit": uhrzeit
+                })
+
+    return render(request, "trashApp/klassifizierte_bilder.html", {"bilder": bilder})
+

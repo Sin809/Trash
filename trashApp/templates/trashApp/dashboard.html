@@ -23,8 +23,8 @@
                             <td>Papier</td>
                             <td>{{ fuellstaende.papier }}%</td>
                             <td>
-                                <div class="fuellbalkenHintergrund"> <!--längerer balkan und ab 80 rot-->
-                                    <div class="fuellbalken" style="width: {{ fuellstaende.papier }}%;"></div>
+                                <div class="fuellbalkenHintergrund">
+                                <div class="fuellbalken" style="width: {{ fuellstaende.papier }}%; background-color: {% if fuellstaende.papier >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};"></div>
                                 </div>
                             </td>
                         </tr>
@@ -33,7 +33,7 @@
                             <td>{{ fuellstaende.plastik }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: {{ fuellstaende.plastik }}%;"></div>
+                                <div class="fuellbalken" style="width: {{ fuellstaende.plastik }}%; background-color: {% if fuellstaende.plastik >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};"></div>
                                 </div>
                             </td>
                         </tr>
@@ -42,7 +42,11 @@
                             <td>{{ fuellstaende.restmüll }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: {{ fuellstaende.restmüll }}%;"></div>
+                                    <div class="fuellbalken" style="
+                                        width: {{ fuellstaende.restmüll }}%;
+                                        background-color: {% if fuellstaende.restmüll >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};
+                                        ">
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -51,7 +55,11 @@
                             <td>{{ fuellstaende.uneindeutig }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="width: {{ fuellstaende.uneindeutig }}%; background-color: #f39c12;"></div>
+                                    <div class="fuellbalken" style="
+                                        width: {{ fuellstaende.uneindeutig }}%;
+                                        background-color: {% if fuellstaende.uneindeutig >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};
+                                        ">
+                                    </div>
                                 </div>
                             </td>
                         </tr>

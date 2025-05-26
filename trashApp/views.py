@@ -209,7 +209,8 @@ def xmlStrukturierenLogbuch():
 def logbuchEintragHtml(request):
     if request.method == 'POST':
         art = request.POST.get('art')
-
+        uuid_value = request.session.get('uuid')
+        
         if not os.path.exists(LOGBUCH_XML_PATH):
             root = ET.Element('logbuch')
             tree = ET.ElementTree(root)
@@ -217,9 +218,12 @@ def logbuchEintragHtml(request):
             tree = xmlStrukturierenLogbuch()
             root = tree.getroot()
 
-        zeitstempel = datetime.now().strftime("%d.%m.%Y %H:%M")
+        benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        if benutzer_element is None:
+            benutzer_element = ET.SubElement(root, 'benutzer', benutzer_id=uuid_value)
 
-        eintrag = ET.SubElement(root, 'eintrag')
+        zeitstempel = datetime.now().strftime("%d.%m.%Y %H:%M")
+        eintrag = ET.SubElement(benutzer_element, 'eintrag')
         ET.SubElement(eintrag, 'zeit').text = zeitstempel
         ET.SubElement(eintrag, 'art').text = art
 
@@ -227,6 +231,7 @@ def logbuchEintragHtml(request):
         return redirect('dashboard')
 
     return redirect('dashboard')
+
 
 
 def admin_html(request):

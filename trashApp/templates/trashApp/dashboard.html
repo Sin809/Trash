@@ -16,14 +16,6 @@
 
         <div id="fuellstandid" class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeFuellstandtabelle('fuellstandTable')">Füllstandsanzeige</h2>
-            <label for="zeitraum">Zeitraum filtern:</label>
-            <select id="zeitraum" class="filterDropdown">
-                <option>Letzte Stunde</option>
-                <option>Heute</option>
-                <option>Diese Woche</option>
-                <option>Diesen Monat</option>
-            </select>
-
             <div class="tabellenScrollerClass">
                 <table id="fuellstandTable">
                     <thead>
@@ -85,6 +77,13 @@
         
         <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeLogbuch('logbuchid')">Logbuch</h2>
+            <label for="zeitraum">Zeitraum filtern:</label>
+            <select id="zeitraum" class="filterDropdown">
+                <option>Letzte Stunde</option>
+                <option>Heute</option>
+                <option>Diese Woche</option>
+                <option>Diesen Monat</option>
+            </select>
             <div class="tabellenScrollerClass">
                 <table id="logbuchid">
                     <thead>
@@ -92,6 +91,7 @@
                             <th>Zeitstempel</th>
                             <th>Art</th>
                             <th>Bild</th>
+                            <th>Löschen</th> <!-- ← Hier geändert -->
                         </tr>
                     </thead>
                     <tbody>
@@ -110,14 +110,21 @@
                                         Kein Bild
                                     {% endif %}
                                 </td>
+                                 <td>
+                                    <form method="POST" action="{% url 'eintragLoeschen' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
+                                        <button type="submit" name="loeschen">Löschen</button>
+                                    </form>
+                                </td>
                             </tr>
                         {% empty %}
-                            <tr><td colspan="3">Keine Einträge vorhanden</td></tr>
+                            <tr><td colspan="4">Keine Einträge vorhanden</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+
 
         <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeSystemstatus('systemstatusid')">Systemstatus</h2>

@@ -184,6 +184,7 @@ def profil_bearbeiten(request):
 
     return redirect('profil')
 
+#S
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -218,7 +219,22 @@ def dashboard_html(request):
         'fuellstaende': fuellstaende
     })
 
+#S
+BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")
+def xmlStrukturierenBenutzer():
+    parser = ET.XMLParser(remove_blank_text=True)
+    return ET.parse(BENUTZER_XML_PATH, parser)
 
+#S
+def finde_benutzername(uuid):
+    if not os.path.exists(BENUTZER_XML_PATH):
+        return None
+    tree = xmlStrukturierenBenutzer()
+    root = tree.getroot()
+    benutzer = root.find(f"benutzer[@id='{uuid}']")
+    if benutzer is not None:
+        return benutzer.findtext('benutzername')
+    return None
 
 LOGBUCH_XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
 
@@ -226,10 +242,12 @@ def xmlStrukturierenLogbuch():
     parser = ET.XMLParser(remove_blank_text=True)
     return ET.parse(LOGBUCH_XML_PATH, parser)
 
+#S
 def logbuchEintragHtml(request):
     if request.method == 'POST':
         art = request.POST.get('art')
         uuid_value = request.session.get('uuid')
+        benutzername = finde_benutzername(uuid_value)
 
         if not os.path.exists(LOGBUCH_XML_PATH):
             root = ET.Element('logbuch')
@@ -246,21 +264,48 @@ def logbuchEintragHtml(request):
         eintrag = ET.SubElement(benutzer_element, 'eintrag')
         ET.SubElement(eintrag, 'zeit').text = zeitstempel
         ET.SubElement(eintrag, 'art').text = art
-        ET.SubElement(eintrag, 'bild_url').text = "Kein Bild gemacht"  # <-- hier hinzugefügt
+        ET.SubElement(eintrag, 'bild_url').text = "Kein Bild gemacht"
+        ET.SubElement(eintrag, 'benutzername').text = benutzername
 
         tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('dashboard')
 
     return redirect('dashboard')
 
+#S
+def eintragLoeschen(request):
+    if request.method == 'POST':
+        logbucheintragloeschen = request.POST.get('loeschen') 
+
+        if not logbucheintragloeschen:
+            return redirect('dashboard')
+
+        if os.path.exists(LOGBUCH_XML_PATH):
+            tree = xmlStrukturierenLogbuch()
+            root = tree.getroot()
+
+            uuid_value = request.session.get('uuid')
+            benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+
+            if benutzer_element is not None:
+                for eintrag in benutzer_element.findall('eintrag'):
+                    if eintrag.findtext('zeit') == logbucheintragloeschen:
+                        benutzer_element.remove(eintrag)
+                        tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+                        break
+
+        return redirect('dashboard')
+
+    return redirect('dashboard')
 
 
-
+#S
 def admin_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check: return check
     return render(request, 'trashApp/admin.html')
 
+#S
 def logout(request):
     request.session.flush()
     return redirect('login')
@@ -342,12 +387,6 @@ def api_upload(request):
         return JsonResponse({"status": "erfolgreich", "filename": bild.name})
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
-
-BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")
-
-def xmlStrukturierenBenutzer():
-    parser = ET.XMLParser(remove_blank_text=True)
-    return ET.parse(BENUTZER_XML_PATH, parser)
 
 def klassifizierte_bilder_html(request):
     pfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")

@@ -55,7 +55,12 @@ def registrieren_html(request):
         pw_wiederholung = request.POST['passwort_wiederholen']
 
         if passwort != pw_wiederholung:
-            return HttpResponse("Passwörter stimmen nicht überein")
+            return HttpResponse("""
+                            <script>
+                                alert("Passwörter stimmen nicht überein");
+                                window.history.back();
+                            </script>
+                            """)
 
         if not os.path.exists(XML_PATH):
             root = ET.Element('benutzerliste')
@@ -65,8 +70,13 @@ def registrieren_html(request):
             root = tree.getroot()
 
         if root.xpath(f"benutzer[benutzername='{benutzername}' or email='{email}']"):
-            return HttpResponse("Benutzername oder E-Mail bereits registriert")
-
+            return HttpResponse("""
+                            <script>
+                                alert("Benutzername oder E-Mail bereits registriert");
+                                window.history.back();
+                            </script>
+                            """)
+        
         neuer_benutzer = Benutzer(benutzername, email, passwort) #neue user klasse anlegen
         root.append(neuer_benutzer.als_xml_speichern())  #klasse als xml speichern
         tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
@@ -87,7 +97,12 @@ def login_html(request):
         passwort = request.POST['passwort']
 
         if not os.path.exists(XML_PATH):
-            return HttpResponse("Keine Benutzer vorhanden")
+            return HttpResponse("""
+                            <script>
+                                alert("Keine Benutzer vorhanden");
+                                window.history.back();
+                            </script>
+                            """)
 
         tree = xmlStrukturieren()
         root = tree.getroot()
@@ -104,7 +119,12 @@ def login_html(request):
             else:
                 return redirect('dashboard')
 
-        return HttpResponse("Falsche Zugangsdaten")
+        return HttpResponse("""
+                <script>
+                    alert("Falsche Zugangsdaten");
+                    window.history.back();
+                </script>
+                """)
 
     return render(request, 'trashApp/login.html')
 
@@ -119,7 +139,12 @@ def profil_html(request):
     benutzer_element = root.xpath(f"benutzer[@id='{uuid_wert}']")
 
     if not benutzer_element:
-        return HttpResponse("Benutzer nicht gefunden")
+        return HttpResponse("""
+                            <script>
+                                alert("Benutzer nicht gefunden");
+                                window.history.back();
+                            </script>
+                            """)
 
     benutzer_element = benutzer_element[0]
     benutzer = {
@@ -142,7 +167,12 @@ def profil_bearbeiten(request):
         benutzer_element = root.xpath(f"benutzer[@id='{uuid_value}']")
 
         if not benutzer_element:
-            return HttpResponse("Benutzer nicht gefunden")
+            return HttpResponse("""
+                            <script>
+                                alert("Benutzer nicht gefunden");
+                                window.history.back();
+                            </script>
+                            """)
 
         benutzer_element = benutzer_element[0]
         benutzer_element.find('benutzername').text = request.POST['vorname']

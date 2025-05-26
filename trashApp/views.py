@@ -223,7 +223,6 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 def api_upload(request):
     if request.method == "POST":
         bild = request.FILES.get("bild")
-        label = request.POST.get("label", "Unbekannt")
 
         if not bild:
             return JsonResponse({"error": "Kein Bild erhalten"}, status=400)
@@ -231,18 +230,16 @@ def api_upload(request):
         speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
         os.makedirs(speicherpfad, exist_ok=True)
 
-        dateiname = f"{label}_{bild.name}"
-        zielpfad = os.path.join(speicherpfad, dateiname)
+        zielpfad = os.path.join(speicherpfad, bild.name)
 
-        with open(zielpfad, "wb") as f:
-            for chunk in bild.chunks():
-                f.write(chunk)
+        with open(zielpfad, "wb") as datei:
+            datei.write(bild.read())
 
-        return JsonResponse({"status": "erfolgreich", "filename": dateiname})
+        return JsonResponse({"status": "erfolgreich", "filename": bild.name})
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
-#A
+
 def klassifizierte_bilder_html(request):
     pfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
     bilder = []
@@ -250,9 +247,26 @@ def klassifizierte_bilder_html(request):
     if os.path.exists(pfad):
         for datei in sorted(os.listdir(pfad), reverse=True):
             if datei.lower().endswith((".jpg", ".jpeg", ".png")):
+                name_ohne_endung = os.path.splitext(datei)[0]  # z. B. 20250526_131547_Papier
+                teile = name_ohne_endung.split("_")
+
+                if len(teile) >= 3:
+                    datum_raw = teile[0]     # 20250526
+                    uhrzeit_raw = teile[1]   # 131547
+                    label = teile[2]         # Papier
+
+                    datum = f"{datum_raw[6:8]}.{datum_raw[4:6]}.{datum_raw[0:4]}"
+                    uhrzeit = f"{uhrzeit_raw[0:2]}:{uhrzeit_raw[2:4]}:{uhrzeit_raw[4:6]}"
+                else:
+                    datum = "Unbekannt"
+                    uhrzeit = "Unbekannt"
+                    label = "Unbekannt"
+
                 bilder.append({
                     "url": f"/static/klassifikation/{datei}",
-                    "label": datei.split("_")[0]
+                    "label": label,
+                    "datum": datum,
+                    "uhrzeit": uhrzeit
                 })
 
     return render(request, "trashApp/klassifizierte_bilder.html", {"bilder": bilder})

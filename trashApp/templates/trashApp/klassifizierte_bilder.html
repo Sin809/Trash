@@ -29,7 +29,10 @@
         {% for eintrag in bilder %}
             <div class="bild-block">
                 <img src="{{ eintrag.url }}" alt="Bild">
-                <div class="label">Kategorie: {{ eintrag.label }}</div>
+                <div class="kategorie">
+                    Kategorie: {{ eintrag.label }}<br>
+                    Aufgenommen am: {{ eintrag.datum }} um {{ eintrag.uhrzeit }}
+                </div>
             </div>
         {% endfor %}
     {% else %}

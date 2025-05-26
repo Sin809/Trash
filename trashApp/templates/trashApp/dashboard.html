@@ -79,8 +79,8 @@
             <h2 class="hauptUeberschriftenclass">Logbuch-Eingabe</h2>
             <form method="POST" action="{% url 'logbuch_eintrag' %}">
                 {% csrf_token %}
-                <label for="aktion">Müllerkennung simulieren:</label>
-                <select name="aktion" id="aktion">
+                <label for="art">Müllerkennung simulieren:</label>
+                <select name="art" id="art">
                     <option>Papier</option>
                     <option>Plastik</option>
                     <option>Restmüll</option>
@@ -97,7 +97,7 @@
                     <thead>
                         <tr>
                             <th>Zeitstempel</th>
-                            <th>Aktion</th>
+                            <th>Art</th>
                         </tr>
                     </thead>
                     <tbody>

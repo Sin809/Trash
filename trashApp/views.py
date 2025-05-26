@@ -194,8 +194,8 @@ def dashboard_html(request):
         root = tree.getroot()
         for eintrag in root.findall('eintrag'):
             zeit = eintrag.findtext('zeit')
-            aktion = eintrag.findtext('aktion')
-            eintraege.append({'zeit': zeit, 'aktion': aktion})
+            art = eintrag.findtext('art')
+            eintraege.append({'zeit': zeit, 'art': art})
 
     return render(request, 'trashApp/dashboard.html', {'logbuch_eintraege': eintraege})
 
@@ -208,7 +208,7 @@ def xmlStrukturierenLogbuch():
 
 def logbuchEintragHtml(request):
     if request.method == 'POST':
-        aktion = request.POST.get('aktion')
+        art = request.POST.get('art')
 
         if not os.path.exists(LOGBUCH_XML_PATH):
             root = ET.Element('logbuch')
@@ -221,7 +221,7 @@ def logbuchEintragHtml(request):
 
         eintrag = ET.SubElement(root, 'eintrag')
         ET.SubElement(eintrag, 'zeit').text = zeitstempel
-        ET.SubElement(eintrag, 'aktion').text = aktion
+        ET.SubElement(eintrag, 'art').text = art
 
         tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('dashboard')

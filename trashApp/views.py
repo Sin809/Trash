@@ -192,6 +192,11 @@ def dashboard_html(request):
     uuid_value = request.session.get('uuid')
     eintraege = []
 
+    papier_anzahl = 0
+    plastik_anzahl = 0
+    restmuell_anzahl = 0
+    uneindeutig_anzahl = 0
+
     if os.path.exists(LOGBUCH_XML_PATH):
         tree = xmlStrukturierenLogbuch()
         root = tree.getroot()
@@ -201,10 +206,33 @@ def dashboard_html(request):
         if benutzer_element is not None:
             for eintrag in benutzer_element.findall('eintrag'):
                 zeit = eintrag.findtext('zeit')
-                art = eintrag.findtext('art')
+                art = eintrag.findtext('art').strip().lower()
                 eintraege.append({'zeit': zeit, 'art': art})
 
-    return render(request, 'trashApp/dashboard.html', {'logbuch_eintraege': eintraege})
+                if art == "papier":
+                    papier_anzahl += 1
+                elif art == "plastik":
+                    plastik_anzahl += 1
+                elif art == "restmüll":
+                    restmuell_anzahl += 1
+                elif art == "uneindeutig":
+                    uneindeutig_anzahl += 1
+
+    gesamt = papier_anzahl + plastik_anzahl + restmuell_anzahl + uneindeutig_anzahl
+    if gesamt == 0:
+        gesamt = 1  # Teilen durch 0 vermeiden
+
+    fuellstaende = {
+        'papier': int((papier_anzahl / gesamt) * 100),
+        'plastik': int((plastik_anzahl / gesamt) * 100),
+        'restmüll': int((restmuell_anzahl / gesamt) * 100),
+        'uneindeutig': int((uneindeutig_anzahl / gesamt) * 100)
+    }
+
+    return render(request, 'trashApp/dashboard.html', {
+        'logbuch_eintraege': eintraege,
+        'fuellstaende': fuellstaende
+    })
 
 
 LOGBUCH_XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')

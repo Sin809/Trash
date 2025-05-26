@@ -5,6 +5,7 @@ from lxml import etree as ET #alternative zu "xml.etree.ElementTree"
 from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from datetime import datetime
 
 #A noch unklar
 from django.core.files.storage import default_storage
@@ -186,7 +187,47 @@ def profil_bearbeiten(request):
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check: return check
-    return render(request, 'trashApp/dashboard.html')
+
+    eintraege = []
+    if os.path.exists(LOGBUCH_XML_PATH):
+        tree = xmlStrukturierenLogbuch()
+        root = tree.getroot()
+        for eintrag in root.findall('eintrag'):
+            zeit = eintrag.findtext('zeit')
+            aktion = eintrag.findtext('aktion')
+            eintraege.append({'zeit': zeit, 'aktion': aktion})
+
+    return render(request, 'trashApp/dashboard.html', {'logbuch_eintraege': eintraege})
+
+
+LOGBUCH_XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
+
+def xmlStrukturierenLogbuch():
+    parser = ET.XMLParser(remove_blank_text=True)
+    return ET.parse(LOGBUCH_XML_PATH, parser)
+
+def logbuchEintragHtml(request):
+    if request.method == 'POST':
+        aktion = request.POST.get('aktion')
+
+        if not os.path.exists(LOGBUCH_XML_PATH):
+            root = ET.Element('logbuch')
+            tree = ET.ElementTree(root)
+        else:
+            tree = xmlStrukturierenLogbuch()
+            root = tree.getroot()
+
+        zeitstempel = datetime.now().strftime("%d.%m.%Y %H:%M")
+
+        eintrag = ET.SubElement(root, 'eintrag')
+        ET.SubElement(eintrag, 'zeit').text = zeitstempel
+        ET.SubElement(eintrag, 'aktion').text = aktion
+
+        tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        return redirect('dashboard')
+
+    return redirect('dashboard')
+
 
 def admin_html(request):
     check = benutzer_ist_eingeloggt(request)

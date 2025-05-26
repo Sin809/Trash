@@ -1,3 +1,23 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <logbuch>
-<benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a"><eintrag><zeit>26.05.2025 13:16</zeit><art>Papier</art></eintrag></benutzer></logbuch>
+  <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">
+    <eintrag>
+      <zeit>26.05.2025 13:18</zeit>
+      <art>Papier</art>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 13:19</zeit>
+      <art>Plastik</art>
+    </eintrag>
+  </benutzer>
+  <benutzer benutzer_id="4442375f-806a-490f-90af-83898ffa4d7a">
+    <eintrag>
+      <zeit>26.05.2025 13:19</zeit>
+      <art>Papier</art>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 13:19</zeit>
+      <art>Restmüll</art>
+    </eintrag>
+  </benutzer>
+</logbuch>

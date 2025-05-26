@@ -186,16 +186,23 @@ def profil_bearbeiten(request):
 
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
-    if check: return check
+    if check: 
+        return check
 
+    uuid_value = request.session.get('uuid')
     eintraege = []
+
     if os.path.exists(LOGBUCH_XML_PATH):
         tree = xmlStrukturierenLogbuch()
         root = tree.getroot()
-        for eintrag in root.findall('eintrag'):
-            zeit = eintrag.findtext('zeit')
-            art = eintrag.findtext('art')
-            eintraege.append({'zeit': zeit, 'art': art})
+
+        benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        
+        if benutzer_element is not None:
+            for eintrag in benutzer_element.findall('eintrag'):
+                zeit = eintrag.findtext('zeit')
+                art = eintrag.findtext('art')
+                eintraege.append({'zeit': zeit, 'art': art})
 
     return render(request, 'trashApp/dashboard.html', {'logbuch_eintraege': eintraege})
 
@@ -210,7 +217,7 @@ def logbuchEintragHtml(request):
     if request.method == 'POST':
         art = request.POST.get('art')
         uuid_value = request.session.get('uuid')
-        
+
         if not os.path.exists(LOGBUCH_XML_PATH):
             root = ET.Element('logbuch')
             tree = ET.ElementTree(root)

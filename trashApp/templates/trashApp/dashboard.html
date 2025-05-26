@@ -98,9 +98,16 @@
                             <tr>
                                 <td>{{ eintrag.zeit }}</td>
                                 <td>{{ eintrag.art }}</td>
+                                <td>
+                                    <!--<form method="POST" action style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">-->
+                                        <button type="submit">Löschen</button>
+                                    </form>
+                                </td>
                             </tr>
                         {% empty %}
-                            <tr><td colspan="2">Keine Einträge vorhanden</td></tr>
+                            <tr><td colspan="3">Keine Einträge vorhanden</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

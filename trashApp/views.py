@@ -186,16 +186,12 @@ def profil_bearbeiten(request):
 
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
-    if check: 
+    if check:
         return check
 
     uuid_value = request.session.get('uuid')
     eintraege = []
-
-    papier_anzahl = 0
-    plastik_anzahl = 0
-    restmuell_anzahl = 0
-    uneindeutig_anzahl = 0
+    zaehler = {'Papier': 0, 'Plastik': 0, 'Restmüll': 0, 'Uneindeutig': 0}
 
     if os.path.exists(LOGBUCH_XML_PATH):
         tree = xmlStrukturierenLogbuch()
@@ -206,33 +202,22 @@ def dashboard_html(request):
         if benutzer_element is not None:
             for eintrag in benutzer_element.findall('eintrag'):
                 zeit = eintrag.findtext('zeit')
-                art = eintrag.findtext('art').strip().lower()
+                art = eintrag.findtext('art')
                 eintraege.append({'zeit': zeit, 'art': art})
+                if art in zaehler:
+                    zaehler[art] += 1
 
-                if art == "papier":
-                    papier_anzahl += 1
-                elif art == "plastik":
-                    plastik_anzahl += 1
-                elif art == "restmüll":
-                    restmuell_anzahl += 1
-                elif art == "uneindeutig":
-                    uneindeutig_anzahl += 1
-
-    gesamt = papier_anzahl + plastik_anzahl + restmuell_anzahl + uneindeutig_anzahl
-    if gesamt == 0:
-        gesamt = 1  # Teilen durch 0 vermeiden
-
-    fuellstaende = {
-        'papier': int((papier_anzahl / gesamt) * 100),
-        'plastik': int((plastik_anzahl / gesamt) * 100),
-        'restmüll': int((restmuell_anzahl / gesamt) * 100),
-        'uneindeutig': int((uneindeutig_anzahl / gesamt) * 100)
-    }
+    # Füllstände max 10
+    fuellstaende = {}
+    for art, count in zaehler.items():
+        prozent = min(round((count / 10) * 100), 100)
+        fuellstaende[art.lower()] = prozent
 
     return render(request, 'trashApp/dashboard.html', {
         'logbuch_eintraege': eintraege,
         'fuellstaende': fuellstaende
     })
+
 
 
 LOGBUCH_XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')

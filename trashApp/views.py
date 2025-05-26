@@ -24,11 +24,17 @@ class Benutzer:
         ET.SubElement(user, 'passwort').text = self.passwort
         ET.SubElement(user, 'rolle').text = self.rolle
         return user
+
+#S    
+def xmlStrukturieren():
+    parser = ET.XMLParser(remove_blank_text=True)
+    return ET.parse(XML_PATH, parser)
+
 #A    
 def lade_benutzer():
     if not os.path.exists(XML_PATH):
         return []
-    tree = ET.parse(XML_PATH)
+    tree = xmlStrukturieren()
     root = tree.getroot()
     return root.xpath('//benutzer')
 
@@ -47,7 +53,7 @@ def registrieren_html(request):
             root = ET.Element('benutzerliste')
             tree = ET.ElementTree(root)
         else:
-            tree = ET.parse(XML_PATH)
+            tree = xmlStrukturieren()
             root = tree.getroot()
 
         if root.xpath(f"benutzer[benutzername='{benutzername}' or email='{email}']"):
@@ -75,7 +81,7 @@ def login_html(request):
         if not os.path.exists(XML_PATH):
             return HttpResponse("Keine Benutzer vorhanden")
 
-        tree = ET.parse(XML_PATH)
+        tree = xmlStrukturieren()
         root = tree.getroot()
 
         benutzer = root.xpath(f"benutzer[benutzername='{benutzername}' and passwort='{passwort}']")
@@ -100,7 +106,7 @@ def profil_html(request):
     if check: return check
 
     uuid_wert = request.session.get('uuid')
-    tree = ET.parse(XML_PATH)
+    tree = xmlStrukturieren()
     root = tree.getroot()
     benutzer_element = root.xpath(f"benutzer[@id='{uuid_wert}']")
 
@@ -123,7 +129,7 @@ def profil_bearbeiten(request):
 
     if request.method == 'POST':
         uuid_value = request.session.get('uuid')
-        tree = ET.parse(XML_PATH)
+        tree = xmlStrukturieren()
         root = tree.getroot()
         benutzer_element = root.xpath(f"benutzer[@id='{uuid_value}']")
 

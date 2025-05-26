@@ -91,6 +91,7 @@
                         <tr>
                             <th>Zeitstempel</th>
                             <th>Art</th>
+                            <th>Bild</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,11 +100,15 @@
                                 <td>{{ eintrag.zeit }}</td>
                                 <td>{{ eintrag.art }}</td>
                                 <td>
-                                    <!--<form method="POST" action style="display:inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">-->
-                                        <button type="submit">Löschen</button>
-                                    </form>
+                                    {% if eintrag.bild_url %}
+                                        {% if "http" in eintrag.bild_url or "/static/" in eintrag.bild_url %}
+                                            <a href="{{ eintrag.bild_url }}" target="_blank">Bild anzeigen</a>
+                                        {% else %}
+                                            {{ eintrag.bild_url }}
+                                        {% endif %}
+                                    {% else %}
+                                        Kein Bild
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% empty %}

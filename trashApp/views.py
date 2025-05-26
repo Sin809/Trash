@@ -1,10 +1,19 @@
 import os
 import uuid
 import smtplib
-from lxml import etree as ET
+from lxml import etree as ET #alternative zu "xml.etree.ElementTree"
 from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from datetime import datetime
+
+#A noch unklar
+from django.core.files.storage import default_storage
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.conf import settings
+
 
 XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
 
@@ -24,11 +33,17 @@ class Benutzer:
         ET.SubElement(user, 'passwort').text = self.passwort
         ET.SubElement(user, 'rolle').text = self.rolle
         return user
+
+#S    
+def xmlStrukturieren():
+    parser = ET.XMLParser(remove_blank_text=True)
+    return ET.parse(XML_PATH, parser)
+
 #A    
 def lade_benutzer():
     if not os.path.exists(XML_PATH):
         return []
-    tree = ET.parse(XML_PATH)
+    tree = xmlStrukturieren()
     root = tree.getroot()
     return root.xpath('//benutzer')
 
@@ -41,20 +56,30 @@ def registrieren_html(request):
         pw_wiederholung = request.POST['passwort_wiederholen']
 
         if passwort != pw_wiederholung:
-            return HttpResponse("Passwörter stimmen nicht überein")
+            return HttpResponse("""
+                            <script>
+                                alert("Passwörter stimmen nicht überein");
+                                window.history.back();
+                            </script>
+                            """)
 
         if not os.path.exists(XML_PATH):
             root = ET.Element('benutzerliste')
             tree = ET.ElementTree(root)
         else:
-            tree = ET.parse(XML_PATH)
+            tree = xmlStrukturieren()
             root = tree.getroot()
 
         if root.xpath(f"benutzer[benutzername='{benutzername}' or email='{email}']"):
-            return HttpResponse("Benutzername oder E-Mail bereits registriert")
-
-        neuer_benutzer = Benutzer(benutzername, email, passwort)#neue user klasse anlegen
-        root.append(neuer_benutzer.als_xml_speichern())# klasse als xml speichern
+            return HttpResponse("""
+                            <script>
+                                alert("Benutzername oder E-Mail bereits registriert");
+                                window.history.back();
+                            </script>
+                            """)
+        
+        neuer_benutzer = Benutzer(benutzername, email, passwort) #neue user klasse anlegen
+        root.append(neuer_benutzer.als_xml_speichern())  #klasse als xml speichern
         tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('login')
 
@@ -73,9 +98,14 @@ def login_html(request):
         passwort = request.POST['passwort']
 
         if not os.path.exists(XML_PATH):
-            return HttpResponse("Keine Benutzer vorhanden")
+            return HttpResponse("""
+                            <script>
+                                alert("Keine Benutzer vorhanden");
+                                window.history.back();
+                            </script>
+                            """)
 
-        tree = ET.parse(XML_PATH)
+        tree = xmlStrukturieren()
         root = tree.getroot()
 
         benutzer = root.xpath(f"benutzer[benutzername='{benutzername}' and passwort='{passwort}']")
@@ -90,7 +120,12 @@ def login_html(request):
             else:
                 return redirect('dashboard')
 
-        return HttpResponse("Falsche Zugangsdaten")
+        return HttpResponse("""
+                <script>
+                    alert("Falsche Zugangsdaten");
+                    window.history.back();
+                </script>
+                """)
 
     return render(request, 'trashApp/login.html')
 
@@ -100,12 +135,17 @@ def profil_html(request):
     if check: return check
 
     uuid_wert = request.session.get('uuid')
-    tree = ET.parse(XML_PATH)
+    tree = xmlStrukturieren()
     root = tree.getroot()
     benutzer_element = root.xpath(f"benutzer[@id='{uuid_wert}']")
 
     if not benutzer_element:
-        return HttpResponse("Benutzer nicht gefunden")
+        return HttpResponse("""
+                            <script>
+                                alert("Benutzer nicht gefunden");
+                                window.history.back();
+                            </script>
+                            """)
 
     benutzer_element = benutzer_element[0]
     benutzer = {
@@ -123,12 +163,17 @@ def profil_bearbeiten(request):
 
     if request.method == 'POST':
         uuid_value = request.session.get('uuid')
-        tree = ET.parse(XML_PATH)
+        tree = xmlStrukturieren()
         root = tree.getroot()
         benutzer_element = root.xpath(f"benutzer[@id='{uuid_value}']")
 
         if not benutzer_element:
-            return HttpResponse("Benutzer nicht gefunden")
+            return HttpResponse("""
+                            <script>
+                                alert("Benutzer nicht gefunden");
+                                window.history.back();
+                            </script>
+                            """)
 
         benutzer_element = benutzer_element[0]
         benutzer_element.find('benutzername').text = request.POST['vorname']
@@ -141,8 +186,73 @@ def profil_bearbeiten(request):
 
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
-    if check: return check
-    return render(request, 'trashApp/dashboard.html')
+    if check:
+        return check
+
+    uuid_value = request.session.get('uuid')
+    eintraege = []
+    zaehler = {'Papier': 0, 'Plastik': 0, 'Restmüll': 0, 'Uneindeutig': 0}
+
+    if os.path.exists(LOGBUCH_XML_PATH):
+        tree = xmlStrukturierenLogbuch()
+        root = tree.getroot()
+
+        benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        
+        if benutzer_element is not None:
+            for eintrag in benutzer_element.findall('eintrag'):
+                zeit = eintrag.findtext('zeit')
+                art = eintrag.findtext('art')
+                eintraege.append({'zeit': zeit, 'art': art})
+                if art in zaehler:
+                    zaehler[art] += 1
+
+    # Füllstände max 10
+    fuellstaende = {}
+    for art, count in zaehler.items():
+        prozent = min(round((count / 10) * 100), 100)
+        fuellstaende[art.lower()] = prozent
+
+    return render(request, 'trashApp/dashboard.html', {
+        'logbuch_eintraege': eintraege,
+        'fuellstaende': fuellstaende
+    })
+
+
+
+LOGBUCH_XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
+
+def xmlStrukturierenLogbuch():
+    parser = ET.XMLParser(remove_blank_text=True)
+    return ET.parse(LOGBUCH_XML_PATH, parser)
+
+def logbuchEintragHtml(request):
+    if request.method == 'POST':
+        art = request.POST.get('art')
+        uuid_value = request.session.get('uuid')
+
+        if not os.path.exists(LOGBUCH_XML_PATH):
+            root = ET.Element('logbuch')
+            tree = ET.ElementTree(root)
+        else:
+            tree = xmlStrukturierenLogbuch()
+            root = tree.getroot()
+
+        benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        if benutzer_element is None:
+            benutzer_element = ET.SubElement(root, 'benutzer', benutzer_id=uuid_value)
+
+        zeitstempel = datetime.now().strftime("%d.%m.%Y %H:%M")
+        eintrag = ET.SubElement(benutzer_element, 'eintrag')
+        ET.SubElement(eintrag, 'zeit').text = zeitstempel
+        ET.SubElement(eintrag, 'art').text = art
+
+        tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        return redirect('dashboard')
+
+    return redirect('dashboard')
+
+
 
 def admin_html(request):
     check = benutzer_ist_eingeloggt(request)
@@ -205,3 +315,61 @@ def email_senden(emails, betreff, inhalt):
 # Wiederherstellung: schambach_andre@teams.hs-ludwigsburg.de
 # App: chronoszeitbuchung
 # App-Passwort: wmrh ayvh aprj vllx
+
+#A
+UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+@csrf_exempt
+def api_upload(request):
+    if request.method == "POST":
+        bild = request.FILES.get("bild")
+
+        if not bild:
+            return JsonResponse({"error": "Kein Bild erhalten"}, status=400)
+
+        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+        os.makedirs(speicherpfad, exist_ok=True)
+
+        zielpfad = os.path.join(speicherpfad, bild.name)
+
+        with open(zielpfad, "wb") as datei:
+            datei.write(bild.read())
+
+        return JsonResponse({"status": "erfolgreich", "filename": bild.name})
+
+    return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+
+def klassifizierte_bilder_html(request):
+    pfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+    bilder = []
+
+    if os.path.exists(pfad):
+        for datei in sorted(os.listdir(pfad), reverse=True):
+            if datei.lower().endswith((".jpg", ".jpeg", ".png")):
+                name_ohne_endung = os.path.splitext(datei)[0]  # z. B. 20250526_131547_Papier
+                teile = name_ohne_endung.split("_")
+
+                if len(teile) >= 3:
+                    datum_raw = teile[0]     # 20250526
+                    uhrzeit_raw = teile[1]   # 131547
+                    label = teile[2]         # Papier
+
+                    datum = f"{datum_raw[6:8]}.{datum_raw[4:6]}.{datum_raw[0:4]}"
+                    uhrzeit = f"{uhrzeit_raw[0:2]}:{uhrzeit_raw[2:4]}:{uhrzeit_raw[4:6]}"
+                else:
+                    datum = "Unbekannt"
+                    uhrzeit = "Unbekannt"
+                    label = "Unbekannt"
+
+                bilder.append({
+                    "url": f"/static/klassifikation/{datei}",
+                    "label": label,
+                    "datum": datum,
+                    "uhrzeit": uhrzeit
+                })
+
+    return render(request, "trashApp/klassifizierte_bilder.html", {"bilder": bilder})
+

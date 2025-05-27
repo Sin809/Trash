@@ -73,18 +73,52 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /*erster Wert=waagerechte Verschiebung; zweiter Wert=vertikale Verschiebung; dritter Wert=Schärferadius*/
 }
 
-.fuellbalkenHintergrund {
-    background-color: #eee;
-    height: 20px;
-    border-radius: 10px;
-    overflow: hidden;
+#fuellstandTable {
+    table-layout: fixed;
     width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#fuellstandTable th,
+#fuellstandTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: middle;
+}
+
+#fuellstandTable tr td:nth-child(1) {
+    width: 25%;
+    max-width: none;
+    overflow-wrap: break-word;
+}
+
+#fuellstandTable tr td:nth-child(2) {
+    width: 15%;
+    text-align: center;
+}
+
+#fuellstandTable tr td:nth-child(3) {
+    width: 60%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.fuellbalkenHintergrund {
+    width: 100%;
+    height: 25px;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .fuellbalken {
-    background-color: #1a27e0;
     height: 100%;
+    transition: width 0.5s ease;
 }
+
+
 
 .filterDropdown {
     padding: 8px;

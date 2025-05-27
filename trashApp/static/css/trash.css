@@ -88,23 +88,6 @@ body {
     vertical-align: middle;
 }
 
-#fuellstandTable tr td:nth-child(1) {
-    width: 25%;
-    max-width: none;
-    overflow-wrap: break-word;
-}
-
-#fuellstandTable tr td:nth-child(2) {
-    width: 15%;
-    text-align: center;
-}
-
-#fuellstandTable tr td:nth-child(3) {
-    width: 60%;
-    padding-left: 0;
-    padding-right: 0;
-}
-
 .fuellbalkenHintergrund {
     width: 100%;
     height: 25px;
@@ -115,7 +98,6 @@ body {
 
 .fuellbalken {
     height: 100%;
-    transition: width 0.5s ease;
 }
 
 

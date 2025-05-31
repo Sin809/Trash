@@ -58,27 +58,9 @@ def klassifizieren(pfad):
 
     return label
 
-def aufnehmen_und_senden():
-    os.makedirs(BILD_VERZEICHNIS, exist_ok=True)
-    os.makedirs(NICHT_GESENDET_VERZEICHNIS, exist_ok=True)
-
-    timestamp = datetime.now()
-    datum = timestamp.strftime("%Y-%m-%d")
-    uhrzeit = timestamp.strftime("%H:%M:%S")
-    temp_bildname = f"{timestamp.strftime('%Y%m%d_%H%M%S')}.jpg"
-    pfad = os.path.join(BILD_VERZEICHNIS, temp_bildname)
-
-    subprocess.run(["libcamera-still", "-o", pfad, "--timeout", "1000", "--width", "224", "--height", "224", "--nopreview"], check=True) #cheese :)
-
-    label = klassifizieren(pfad)
-
-    bildname = f"{timestamp.strftime('%Y%m%d_%H%M%S')}_{label}.jpg"
-    neuer_pfad = os.path.join(BILD_VERZEICHNIS, bildname)
-    os.rename(pfad, neuer_pfad)
-
-    #versuch das bild an den server zu schicken
+def sende_bild(pfad, bildname, label, datum, uhrzeit):
     try:
-        with open(neuer_pfad, "rb") as datei:
+        with open(pfad, "rb") as datei:
             response = requests.post(SERVER_URL, files={
                 "bild": (bildname, datei, "image/jpeg"),
             }, data={
@@ -86,17 +68,66 @@ def aufnehmen_und_senden():
                 "datum": datum,
                 "uhrzeit": uhrzeit,
                 "uuid": UUID
-            })
+            }, timeout=10)
 
-        print("Antwort vom Server:", response.status_code, response.text)
-
-        if not response.ok:
-            raise Exception("Fehlerhafte Serverantwort")
-
+        if response.status_code == 200:
+            print(f"Bild erfolgreich gesendet: {bildname}")
+            return True
+        else:
+            print("Serverfehler:", response.status_code, response.text)
+            return False
     except Exception as e:
-        print("Fehler beim Senden, speichere lokal:", e)
-        fehler_pfad = os.path.join(NICHT_GESENDET_VERZEICHNIS, bildname)
-        os.rename(neuer_pfad, fehler_pfad)
+        print("Fehler beim Senden:", e)
+        return False
+
+def versuche_ausstehende_bilder_zu_senden():
+    os.makedirs(NICHT_GESENDET_VERZEICHNIS, exist_ok=True)
+    for datei in sorted(os.listdir(NICHT_GESENDET_VERZEICHNIS)):
+        if not datei.lower().endswith(".jpg"):
+            continue
+
+        teile = os.path.splitext(datei)[0].split("_")
+        if len(teile) != 3:
+            print("Ungültiger Dateiname:", datei)
+            continue
+
+        datum_raw, uhrzeit_raw, label = teile
+        datum = f"{datum_raw[:4]}-{datum_raw[4:6]}-{datum_raw[6:]}"
+        uhrzeit = f"{uhrzeit_raw[:2]}:{uhrzeit_raw[2:4]}:{uhrzeit_raw[4:]}"
+
+        pfad = os.path.join(NICHT_GESENDET_VERZEICHNIS, datei)
+        neuer_pfad = os.path.join(BILD_VERZEICHNIS, datei)
+
+        if sende_bild(pfad, datei, label, datum, uhrzeit):
+            os.rename(pfad, neuer_pfad)
+        else:
+            print(f"erneuter Versuch fehlgeschlagen für: {datei}")
+
+def aufnehmen_und_senden():
+    os.makedirs(BILD_VERZEICHNIS, exist_ok=True)
+    os.makedirs(NICHT_GESENDET_VERZEICHNIS, exist_ok=True)
+
+    versuche_ausstehende_bilder_zu_senden()
+
+    timestamp = datetime.now()
+    datum = timestamp.strftime("%Y-%m-%d")
+    uhrzeit = timestamp.strftime("%H:%M:%S")
+    zeitkompakt = timestamp.strftime("%Y%m%d_%H%M%S")
+
+    temp_bildname = f"{zeitkompakt}.jpg"
+    pfad = os.path.join(BILD_VERZEICHNIS, temp_bildname)
+
+    subprocess.run(["libcamera-still", "-o", pfad, "--timeout", "1000", "--width", "224", "--height", "224", "--nopreview"], check=True) #cheese :)
+
+    label = klassifizieren(pfad)
+
+    bildname = f"{zeitkompakt}_{label}.jpg"
+    neuer_pfad = os.path.join(BILD_VERZEICHNIS, bildname)
+    os.rename(pfad, neuer_pfad)
+
+    if not sende_bild(neuer_pfad, bildname, label, datum, uhrzeit):
+        print("Speichere Bild lokal unter 'nicht_gesendet'")
+        os.rename(neuer_pfad, os.path.join(NICHT_GESENDET_VERZEICHNIS, bildname))
 
 if __name__ == "__main__":
     try:

@@ -226,4 +226,24 @@
       <bild_url>/static/klassifikation/20250527_161644_0 Papier.jpg</bild_url>
     </eintrag>
   </benutzer>
+  <benutzer benutzer_id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
+    <eintrag>
+      <zeit>2025.05.31 11:11:41</zeit>
+      <art>0 Papier</art>
+      <bild_url>/static/klassifikation/20250531_111141_0 Papier.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.05.31 11:25:30</zeit>
+      <art>0 Papier</art>
+      <bild_url>/static/klassifikation/4ca2e077-4e5e-42ab-8aa6-c15336fb88a9/20250531_112530_0 Papier.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.05.31 11:27:59</zeit>
+      <art>0 Papier</art>
+      <bild_url>/static/klassifikation/Max/20250531_112759_0 Papier.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+  </benutzer>
 </logbuch>

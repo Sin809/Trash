@@ -245,5 +245,11 @@
       <bild_url>/static/klassifikation/Max/20250531_112759_0 Papier.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
+    <eintrag>
+      <zeit>2025.05.31 11:36:00</zeit>
+      <art>0 Papier</art>
+      <bild_url>/static/klassifikation/Max/20250531_113600_0 Papier.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
   </benutzer>
 </logbuch>

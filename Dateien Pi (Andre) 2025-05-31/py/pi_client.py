@@ -131,10 +131,14 @@ def aufnehmen_und_senden():
 
 if __name__ == "__main__":
     try:
-        print("Warte auf Tastendruck ...")
-        while lgpio.gpio_read(h, TASTER_PIN) == 1:
-            time.sleep(0.1)
+        while True:
+            print("Warte auf Tastendruck ...")
+            while lgpio.gpio_read(h, TASTER_PIN) == 1:
+                time.sleep(0.1)
 
-        aufnehmen_und_senden()
+            aufnehmen_und_senden()
+
+            while lgpio.gpio_read(h, TASTER_PIN) == 0:
+                time.sleep(0.1)
     finally:
         lgpio.gpiochip_close(h)

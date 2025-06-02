@@ -204,7 +204,8 @@ def dashboard_html(request):
             for eintrag in benutzer_element.findall('eintrag'):
                 zeit = eintrag.findtext('zeit')
                 art = eintrag.findtext('art')
-                eintraege.append({'zeit': zeit, 'art': art})
+                bild_url = eintrag.findtext('bild_url', default='Kein Bild gemacht')
+                eintraege.append({'zeit': zeit, 'art': art, 'bild_url': bild_url})
                 if art in zaehler:
                     zaehler[art] += 1
 
@@ -271,6 +272,13 @@ def logbuchEintragHtml(request):
         return redirect('dashboard')
 
     return redirect('dashboard')
+
+"""
+Bild soll angezeigt
+Art muss von 0 Plastik auf nur Plastik geändert werden
+Ändern-splate damit mit nem tabelle button art ändern und die datei auch umbenannt wird
+"""
+
 
 #S
 def eintragLoeschen(request):
@@ -385,9 +393,9 @@ def api_upload(request):
     if request.method == "POST":
         bild = request.FILES.get("bild")
         label = request.POST.get("label", "Unbekannt")
-        datum = request.POST.get("datum", None)
-        uhrzeit = request.POST.get("uhrzeit", None)
-        uuid_value = request.POST.get("uuid", None)
+        datum = request.POST.get("datum")
+        uhrzeit = request.POST.get("uhrzeit")
+        uuid_value = request.POST.get("uuid")
 
         if not all([bild, datum, uhrzeit, uuid_value]):
             return JsonResponse({"error": "Fehlende Felder"}, status=400)

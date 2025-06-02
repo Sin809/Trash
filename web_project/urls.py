@@ -31,6 +31,8 @@ urlpatterns = [
     path('tr/logbuch-eintrag/', tmpl_views.logbuchEintragHtml, name='logbuch_eintrag'),
     path('tr/logbuch/loeschen/', tmpl_views.eintragLoeschen, name='eintragLoeschen'),
     path('tr/logbuch/aendern/', tmpl_views.eintragArtAendern, name='eintrag_art_aendern'),
+    path('test/', tmpl_views.test_view, name='test'),
+    path('test/aendern/', tmpl_views.aendere_art, name='aendere_art'),
 ]
 
  

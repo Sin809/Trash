@@ -436,7 +436,7 @@ def api_upload(request):
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
-
+#S
 @csrf_exempt
 def eintragArtAendern(request):
     if request.method == "POST":
@@ -447,25 +447,105 @@ def eintragArtAendern(request):
         if not all([uuid_value, alte_zeit, neue_art]):
             return JsonResponse({"error": "Fehlende Daten"}, status=400)
 
-        logbuch_baum = xmlStrukturierenLogbuch()
-        logbuch_root = logbuch_baum.getroot()
-        benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        try:
+            from lxml import etree
+            logbuch_baum = etree.parse(LOGBUCH_XML_PATH)
+            logbuch_root = logbuch_baum.getroot()
+        except Exception as e:
+            return JsonResponse({"error": f"XML konnte nicht geladen werden: {e}"}, status=500)
 
+        benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
         if benutzer_log is None:
             return JsonResponse({"error": "Benutzer nicht gefunden"}, status=404)
 
-        # Eintrag mit passender Zeit finden
         eintrag_gefunden = False
         for eintrag in benutzer_log.findall("eintrag"):
             if eintrag.findtext("zeit") == alte_zeit:
+                alte_art = eintrag.findtext("art")
                 eintrag.find("art").text = neue_art
+
+                bild_url = eintrag.findtext("bild_url")
+                if bild_url:
+                    # bild_url könnte ein relativer Pfad sein, z.B. "trashApp/static/klassifikation/benutzername/20250601_115859_Papier.jpg"
+                    # Absoluten Pfad zum Bild ermitteln:
+                    bild_pfad_absolut = os.path.join(settings.BASE_DIR, bild_url.replace('/', os.sep))
+                    
+                    alter_dateiname = os.path.basename(bild_pfad_absolut)
+                    ordner = os.path.dirname(bild_pfad_absolut)
+
+                    # Neuer Dateiname mit neuer Art
+                    neuer_dateiname = f"{alte_zeit}_{neue_art}.jpg"
+                    neuer_pfad_absolut = os.path.join(ordner, neuer_dateiname)
+
+                    # Datei umbenennen, falls sie existiert
+                    if os.path.exists(bild_pfad_absolut):
+                        try:
+                            os.rename(bild_pfad_absolut, neuer_pfad_absolut)
+                            # Pfad in XML als relativer Pfad zum BASE_DIR speichern (Linux-/Windows-unabhängig)
+                            relativer_pfad_neu = os.path.relpath(neuer_pfad_absolut, settings.BASE_DIR).replace(os.sep, '/')
+                            eintrag.find("bild_url").text = relativer_pfad_neu
+                        except Exception as e:
+                            return JsonResponse({"error": f"Fehler beim Umbenennen der Bilddatei: {e}"}, status=500)
+                    else:
+                        # Datei nicht gefunden, nur Pfad in XML anpassen
+                        relativer_pfad_neu = os.path.relpath(neuer_pfad_absolut, settings.BASE_DIR).replace(os.sep, '/')
+                        eintrag.find("bild_url").text = relativer_pfad_neu
+
                 eintrag_gefunden = True
                 break
 
         if not eintrag_gefunden:
             return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
 
-        logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+        try:
+            logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+        except Exception as e:
+            return JsonResponse({"error": f"XML konnte nicht gespeichert werden: {e}"}, status=500)
 
+        return redirect('/tr/dashboard')
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+
+
+
+
+BILDER_ORDNER = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", "Ben")
+
+def test_view(request):
+    bilder = [f for f in os.listdir(BILDER_ORDNER) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+    return render(request, 'trashApp/test.html', {'bilder': bilder})
+
+@csrf_exempt  # Nur zum Testen, im Produktivbetrieb CSRF-Schutz nutzen!
+def aendere_art(request):
+    if request.method == "POST":
+        alter_dateiname = request.POST.get("bildname")
+        neue_art = request.POST.get("neue_art")
+
+        if not alter_dateiname or not neue_art:
+            return redirect('test')
+
+        # Datei umbennen: z.B. 20250601_115859_Papier.jpg -> 20250601_115859_Plastik.jpg
+        name, ext = os.path.splitext(alter_dateiname)
+        teile = name.split('_')
+        if len(teile) >= 3:
+            teile[-1] = neue_art
+            neuer_name = "_".join(teile) + ext
+        else:
+            return redirect('test')
+
+        alter_pfad = os.path.join(BILDER_ORDNER, alter_dateiname)
+        neuer_pfad = os.path.join(BILDER_ORDNER, neuer_name)
+
+        if os.path.exists(neuer_pfad):
+            # Datei mit neuem Namen existiert schon
+            return redirect('test')
+
+        try:
+            os.rename(alter_pfad, neuer_pfad)
+        except Exception as e:
+            print("Fehler beim Umbenennen:", e)
+
+        return redirect('test')
+
+    return redirect('test')

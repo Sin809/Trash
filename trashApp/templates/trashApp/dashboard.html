@@ -111,7 +111,7 @@
                                 <td>
                                     {% if eintrag.bild_url %}
                                         {% if "http" in eintrag.bild_url or "/static/" in eintrag.bild_url %}
-                                            <a href="{{ eintrag.bild_url }}" target="_blank">Bild anzeigen</a>
+                                            <img src="{{ eintrag.bild_url }}" alt="Bild" style="max-width: 200px; max-height: 150px;">
                                         {% else %}
                                             {{ eintrag.bild_url }}
                                         {% endif %}
@@ -128,16 +128,16 @@
                                 </td>
                                 <td>
                                     <form method="post" action="/tr/logbuch/aendern/">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="uuid" value="{{ request.session.uuid }}">
-                                    <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
-                                    <select name="neue_art">
-                                        <option value="Papier">Papier</option>
-                                        <option value="Plastik">Plastik</option>
-                                        <option value="Restmüll">Restmüll</option>
-                                        <option value="Uneindeutig">Uneindeutig</option>
-                                    </select>
-                                    <button type="submit">Ändern</button>
+                                        {% csrf_token %}
+                                        <input type="hidden" name="uuid" value="{{ request.session.uuid }}">
+                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
+                                        <select name="neue_art" required>
+                                            <option value="Papier">Papier</option>
+                                            <option value="Plastik">Plastik</option>
+                                            <option value="Restmüll">Restmüll</option>
+                                            <option value="Uneindeutig">Uneindeutig</option>
+                                        </select>
+                                        <button type="submit">Ändern</button>
                                     </form>
                                 </td>
                             </tr>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Bilder Müllart ändern</title>
+</head>
+<body>
+    <h1>Bilder im Ordner "klassifikation/Ben"</h1>
+
+    {% for bild in bilder %}
+    <div style="margin-bottom: 20px;">
+        <img src="{% static 'klassifikation/Ben/' %}{{ bild }}" alt="{{ bild }}" width="200"><br>
+        <form method="post" action="{% url 'aendere_art' %}">
+            {% csrf_token %}
+            <input type="hidden" name="bildname" value="{{ bild }}">
+            <select name="neue_art">
+                <option value="Papier">Papier</option>
+                <option value="Plastik">Plastik</option>
+                <option value="Restmüll">Restmüll</option>
+                <option value="Uneindeutig">Uneindeutig</option>
+            </select>
+            <button type="submit">Ändern</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Keine Bilder gefunden.</p>
+    {% endfor %}
+</body>
+</html>

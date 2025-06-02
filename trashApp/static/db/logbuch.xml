@@ -2,42 +2,6 @@
 <logbuch>
   <benutzer benutzer_id="4442375f-806a-490f-90af-83898ffa4d7a">
     <eintrag>
-      <zeit>26.05.2025 15:11</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:11</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:14</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:15</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:15</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:15</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
       <zeit>26.05.2025 15:15</zeit>
       <art>Papier</art>
       <bild_url>Kein Bild gemacht</bild_url>
@@ -105,7 +69,7 @@
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:40:16</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>sin</benutzername>
       <bild_url>/static/klassifikation/20250526_144016_0 Papier.jpg</bild_url>
     </eintrag>
@@ -117,7 +81,7 @@
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:07:41</zeit>
-      <art>0 Papier</art>
+      <art>Plastik</art>
       <benutzername>sin</benutzername>
       <bild_url>/static/klassifikation/20250526_140741_0 Papier.jpg</bild_url>
     </eintrag>
@@ -221,39 +185,39 @@
   <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">
     <eintrag>
       <zeit>27.05.2025 14:10:53</zeit>
-      <art>0 Papier</art>
+      <art>Plastik</art>
       <benutzername>Mustermann</benutzername>
-      <bild_url>/static/klassifikation/20250527_141053_0 Papier.jpg</bild_url>
+      <bild_url>../../../../../static/klassifikation/27.05.2025 14:10:53_Plastik.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:40:16</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_144016_0 Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:10:26</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_141026_0 Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:07:41</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
-      <bild_url>/static/klassifikation/20250526_140741_0 Papier.jpg</bild_url>
+      <bild_url>/static/klassifikation/26.05.2025 14:07:41_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 13:53:57</zeit>
-      <art>1 Plastik</art>
+      <art>Plastik</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_135357_1 Plastik.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 12:23:21</zeit>
-      <art>plastik</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
-      <bild_url>/static/klassifikation/20250526_122321_plastik.jpg</bild_url>
+      <bild_url>/static/klassifikation/26.05.2025 12:23:21_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 12:23:14</zeit>
@@ -263,9 +227,9 @@
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 12:23:07</zeit>
-      <art>papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
-      <bild_url>/static/klassifikation/20250526_122307_papier.jpg</bild_url>
+      <bild_url>../../../../../static/klassifikation/26.05.2025 12:23:07_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 12:11:26</zeit>
@@ -410,13 +374,7 @@
   </benutzer>
   <benutzer benutzer_id="fe5ba143-fb94-463d-842e-3d3198738461">
     <eintrag>
-      <zeit>02.06.2025 15:25</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>s</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>02.06.2025 15:25</zeit>
+      <zeit>02.06.2025 15:36</zeit>
       <art>Plastik</art>
       <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>s</benutzername>

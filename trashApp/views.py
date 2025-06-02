@@ -437,7 +437,14 @@ def api_upload(request):
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
 #S
-KLASSIFIKATION_ORDNER = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+BILDER_ORDNER_REL_XML = '/static/klassifikation'  # Pfad im XML (für Bild-URLs)
+BILDER_ORDNER_ABS = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'klassifikation')  # absoluter Pfad auf Disk
+
+def finde_datei_rekursiv(start_ordner, dateiname):
+    for root, dirs, files in os.walk(start_ordner):
+        if dateiname in files:
+            return os.path.join(root, dateiname)
+    return None
 
 @csrf_exempt
 def eintragArtAendern(request):
@@ -450,69 +457,75 @@ def eintragArtAendern(request):
             return JsonResponse({"error": "Fehlende Daten"}, status=400)
 
         try:
-            logbuch_baum = ET.parse(LOGBUCH_XML_PATH)
-            logbuch_root = logbuch_baum.getroot()
+            tree = ET.parse(LOGBUCH_XML_PATH)
+            root = tree.getroot()
         except Exception as e:
             return JsonResponse({"error": f"XML konnte nicht geladen werden: {e}"}, status=500)
 
-        benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
-        if benutzer_log is None:
+        benutzer = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        if benutzer is None:
             return JsonResponse({"error": "Benutzer nicht gefunden"}, status=404)
 
-        eintrag_gefunden = False
-        for eintrag in benutzer_log.findall("eintrag"):
+        gefunden = False
+        for eintrag in benutzer.findall("eintrag"):
             if eintrag.findtext("zeit") == alte_zeit:
                 eintrag.find("art").text = neue_art
 
                 bild_url = eintrag.findtext("bild_url")
                 if bild_url:
-                    ordner_rel = os.path.dirname(bild_url)
-                    # Führenden '/' entfernen, falls vorhanden, für Dateipfad-Zugriff
-                    if ordner_rel.startswith('/'):
-                        ordner_rel = ordner_rel[1:]
-
                     alter_dateiname = os.path.basename(bild_url)
 
-                    # Teile des Dateinamens: z.B. "20250601_115859_Papier.jpg"
+                    # Dateiname anpassen
                     name, ext = os.path.splitext(alter_dateiname)
                     teile = name.split('_')
                     if len(teile) >= 3:
                         teile[-1] = neue_art
                         neuer_dateiname = "_".join(teile) + ext
                     else:
-                        neuer_dateiname = f"{alte_zeit}_{neue_art}.jpg"
+                        neuer_dateiname = f"{alte_zeit}_{neue_art}{ext}"
 
-                    ordner_abs = os.path.join(settings.BASE_DIR, ordner_rel.replace('/', os.sep))
-                    alter_pfad = os.path.join(ordner_abs, alter_dateiname)
-                    neuer_pfad = os.path.join(ordner_abs, neuer_dateiname)
+                    # Rekursive Suche nach der Datei
+                    alter_pfad = finde_datei_rekursiv(BILDER_ORDNER_ABS, alter_dateiname)
+                    if not alter_pfad:
+                        return JsonResponse({"error": "Bilddatei nicht gefunden"}, status=404)
+
+                    ordner_von_alter_pfad = os.path.dirname(alter_pfad)
+                    neuer_pfad = os.path.join(ordner_von_alter_pfad, neuer_dateiname)
 
                     try:
-                        if os.path.exists(alter_pfad):
-                            os.rename(alter_pfad, neuer_pfad)
+                        os.rename(alter_pfad, neuer_pfad)
 
-                        # Neuen relativen Pfad für URL mit führendem '/'
-                        neuer_rel_pfad = os.path.join(ordner_rel, neuer_dateiname).replace(os.sep, '/')
-                        if not neuer_rel_pfad.startswith('/'):
-                            neuer_rel_pfad = '/' + neuer_rel_pfad
+                        # Relativer Pfad im XML (inklusive Unterordner)
+                        rel_ordner = os.path.relpath(ordner_von_alter_pfad, BILDER_ORDNER_ABS).replace(os.sep, '/')
+                        if rel_ordner == '.':
+                            rel_ordner = ''  # direkt im Hauptordner
+                        else:
+                            rel_ordner = '/' + rel_ordner
 
+                        neuer_rel_pfad = f"{BILDER_ORDNER_REL_XML}{rel_ordner}/{neuer_dateiname}"
                         eintrag.find("bild_url").text = neuer_rel_pfad
                     except Exception as e:
                         return JsonResponse({"error": f"Fehler beim Umbenennen der Bilddatei: {e}"}, status=500)
 
-                eintrag_gefunden = True
+                gefunden = True
                 break
 
-        if not eintrag_gefunden:
+        if not gefunden:
             return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
 
         try:
-            logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+            tree.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True)
         except Exception as e:
             return JsonResponse({"error": f"XML konnte nicht gespeichert werden: {e}"}, status=500)
 
         return redirect('/tr/dashboard')
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+
+
+
+
 
 
 

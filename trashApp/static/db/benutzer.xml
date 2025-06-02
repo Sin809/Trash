@@ -36,4 +36,10 @@
     <passwort>www</passwort>
     <rolle>user</rolle>
   </benutzer>
+  <benutzer id="fe5ba143-fb94-463d-842e-3d3198738461">
+    <benutzername>s</benutzername>
+    <email>s@s.s</email>
+    <passwort>s</passwort>
+    <rolle>user</rolle>
+  </benutzer>
 </benutzerliste>

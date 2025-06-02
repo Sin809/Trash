@@ -437,4 +437,40 @@ def api_upload(request):
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
 
+@csrf_exempt
+def eintragArtAendern(request):
+    if request.method == "POST":
+        uuid_value = request.POST.get("uuid")
+        alte_zeit = request.POST.get("zeit")
+        neue_art = request.POST.get("neue_art")
 
+        if not all([uuid_value, alte_zeit, neue_art]):
+            return JsonResponse({"error": "Fehlende Daten"}, status=400)
+
+        logbuch_baum = xmlStrukturierenLogbuch()
+        logbuch_root = logbuch_baum.getroot()
+        benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+
+        if benutzer_log is None:
+            return JsonResponse({"error": "Benutzer nicht gefunden"}, status=404)
+
+        # Eintrag mit passender Zeit finden
+        eintrag_gefunden = False
+        for eintrag in benutzer_log.findall("eintrag"):
+            if eintrag.findtext("zeit") == alte_zeit:
+                eintrag.find("art").text = neue_art
+                eintrag_gefunden = True
+                break
+
+        if not eintrag_gefunden:
+            return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
+
+        logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+        return HttpResponse("""
+                            <script>
+                                alert("Eintrag erfolgreich geändert");
+                                window.location.href = '/tr/dashboard';
+                            </script>
+                            """)
+
+    return JsonResponse({"error": "Nur POST erlaubt"}, status=405)

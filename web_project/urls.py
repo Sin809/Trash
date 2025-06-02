@@ -30,6 +30,7 @@ urlpatterns = [
     #path('tr/klassifizierte-bilder/', tmpl_views.klassifizierte_bilder_html, name='klassifizierte_bilder'),
     path('tr/logbuch-eintrag/', tmpl_views.logbuchEintragHtml, name='logbuch_eintrag'),
     path('tr/logbuch/loeschen/', tmpl_views.eintragLoeschen, name='eintragLoeschen'),
+    path('tr/logbuch/aendern/', tmpl_views.dashboard_html, name='eintrag_art_aendern'),
 ]
 
  

@@ -119,27 +119,27 @@
                                         Kein Bild
                                     {% endif %}
                                 </td>
-                                 <td>
+                                <td>
                                     <form method="POST" action="{% url 'eintragLoeschen' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="loeschen" value="{{ eintrag.zeit }}">
                                         <button type="submit">Löschen</button>
                                     </form>
                                 </td>
-                            </tr>
                                 <td>
                                     <form method="POST" action="{% url 'eintrag_art_aendern' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
                                         <select name="neue_art">
-                                        <option {% if eintrag.art == 'Papier' %}selected{% endif %}>Papier</option>
-                                        <option {% if eintrag.art == 'Plastik' %}selected{% endif %}>Plastik</option>
-                                        <option {% if eintrag.art == 'Restmüll' %}selected{% endif %}>Restmüll</option>
-                                        <option {% if eintrag.art == 'Uneindeutig' %}selected{% endif %}>Uneindeutig</option>
+                                            <option {% if eintrag.art == 'Papier' %}selected{% endif %}>Papier</option>
+                                            <option {% if eintrag.art == 'Plastik' %}selected{% endif %}>Plastik</option>
+                                            <option {% if eintrag.art == 'Restmüll' %}selected{% endif %}>Restmüll</option>
+                                            <option {% if eintrag.art == 'Uneindeutig' %}selected{% endif %}>Uneindeutig</option>
                                         </select>
                                         <button type="submit">Ändern</button>
                                     </form>
                                 </td>
+                            </tr>
                         {% empty %}
                             <tr><td colspan="5">Keine Einträge vorhanden</td></tr>
                         {% endfor %}

@@ -384,88 +384,49 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 def api_upload(request):
     if request.method == "POST":
         bild = request.FILES.get("bild")
+        label = request.POST.get("label", "Unbekannt")
+        datum = request.POST.get("datum", None)
+        uhrzeit = request.POST.get("uhrzeit", None)
+        uuid_value = request.POST.get("uuid", None)
 
-        if not bild:
-            return JsonResponse({"error": "Kein Bild erhalten"}, status=400)
+        if not all([bild, datum, uhrzeit, uuid_value]):
+            return JsonResponse({"error": "Fehlende Felder"}, status=400)
 
-        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+        benutzer_baum = xmlStrukturierenBenutzer()
+        benutzer_root = benutzer_baum.getroot()
+        benutzer_element = benutzer_root.find(f"benutzer[@id='{uuid_value}']")
+        if benutzer_element is None:
+            return JsonResponse({"error": "Ungültige UUID"}, status=403)
+
+        benutzername = benutzer_element.findtext("benutzername")
+
+        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", benutzername)
         os.makedirs(speicherpfad, exist_ok=True)
 
-        zielpfad = os.path.join(speicherpfad, bild.name)
+        dateiname = f"{datum.replace('-', '')}_{uhrzeit.replace(':', '')}_{label}.jpg"
+        zielpfad = os.path.join(speicherpfad, dateiname)
 
         with open(zielpfad, "wb") as datei:
             datei.write(bild.read())
 
-        return JsonResponse({"status": "erfolgreich", "filename": bild.name})
+        logbuch_baum = xmlStrukturierenLogbuch() if os.path.exists(LOGBUCH_XML_PATH) else ET.ElementTree(ET.Element("logbuch"))
+        logbuch_root = logbuch_baum.getroot()
+        benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        if benutzer_log is None:
+            benutzer_log = ET.SubElement(logbuch_root, 'benutzer', benutzer_id=uuid_value)
+
+        url = f"/static/klassifikation/{benutzername}/{dateiname}"
+        eintrag = ET.SubElement(benutzer_log, "eintrag")
+        ET.SubElement(eintrag, "zeit").text = f"{datum.replace('-', '.')} {uhrzeit}"
+        ET.SubElement(eintrag, "art").text = label
+        ET.SubElement(eintrag, "bild_url").text = url
+        ET.SubElement(eintrag, "benutzername").text = benutzername
+
+        logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+
+        return JsonResponse({"status": "erfolgreich", "filename": dateiname})
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
-def klassifizierte_bilder_html(request):
-    pfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
-    bilder = []
 
-    uuid_value = request.session.get('uuid')
-    if not uuid_value:
-        return redirect("login")
-    
-    benutzer_baum = xmlStrukturierenBenutzer()
-    benutzer_root = benutzer_baum.getroot()
-    benutzer_element = benutzer_root.find(f"benutzer[@id='{uuid_value}']")
-    benutzername = benutzer_element.findtext('benutzername') if benutzer_element is not None else "Unbekannt"
-
-    if os.path.exists(LOGBUCH_XML_PATH):
-        logbuch_baum = xmlStrukturierenLogbuch()
-        logbuch_root = logbuch_baum.getroot()
-    else:
-        logbuch_root = ET.Element('logbuch')
-        logbuch_baum = ET.ElementTree(logbuch_root)
-
-    benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
-    if benutzer_log is None:
-        benutzer_log = ET.SubElement(logbuch_root, 'benutzer', benutzer_id=uuid_value)
-
-
-    if os.path.exists(pfad):
-        for datei in sorted(os.listdir(pfad), reverse=True):
-            if datei.lower().endswith((".jpg", ".jpeg", ".png")):
-                name_ohne_endung = os.path.splitext(datei)[0]  # z. B. 20250526_131547_Papier
-                teile = name_ohne_endung.split("_")
-
-                if len(teile) >= 3:
-                    datum_raw = teile[0]     # 20250526
-                    uhrzeit_raw = teile[1]   # 131547
-                    label = teile[2]         # Papier
-
-                    datum = f"{datum_raw[6:8]}.{datum_raw[4:6]}.{datum_raw[0:4]}"
-                    uhrzeit = f"{uhrzeit_raw[0:2]}:{uhrzeit_raw[2:4]}:{uhrzeit_raw[4:6]}"
-                else:
-                    datum = "Unbekannt"
-                    uhrzeit = "Unbekannt"
-                    label = "Unbekannt"
-
-                url = f"/static/klassifikation/{datei}"
-
-                bilder.append({
-                    "url": url,
-                    "label": label,
-                    "datum": datum,
-                    "uhrzeit": uhrzeit
-                })
-                
-                existiert = False
-                for eintrag in benutzer_log.findall('eintrag'):
-                    if eintrag.findtext('bild_url') == url:
-                        existiert = True
-                        break
-
-                if not existiert:
-                    eintrag = ET.SubElement(benutzer_log, 'eintrag')
-                    ET.SubElement(eintrag, 'zeit').text = f"{datum} {uhrzeit}"
-                    ET.SubElement(eintrag, 'art').text = label
-                    ET.SubElement(eintrag, 'benutzername').text = benutzername
-                    ET.SubElement(eintrag, 'bild_url').text = url
-
-    logbuch_baum.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
-
-    return render(request, "trashApp/klassifizierte_bilder.html", {"bilder": bilder})
 

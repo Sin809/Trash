@@ -103,5 +103,107 @@
       <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>sin</benutzername>
     </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 14:40:16</zeit>
+      <art>0 Papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_144016_0 Papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 14:10:26</zeit>
+      <art>0 Papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_141026_0 Papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 14:07:41</zeit>
+      <art>0 Papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_140741_0 Papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 13:53:57</zeit>
+      <art>1 Plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_135357_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:23:21</zeit>
+      <art>plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_122321_plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:23:14</zeit>
+      <art>papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_122314_papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:23:07</zeit>
+      <art>papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_122307_papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:11:26</zeit>
+      <art>0 Papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_121126_0 Papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:11:19</zeit>
+      <art>0 Papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_121119_0 Papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:09:17</zeit>
+      <art>0 Papier</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_120917_0 Papier.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:08:30</zeit>
+      <art>1 Plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_120830_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 12:08:22</zeit>
+      <art>1 Plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_120822_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 10:46:59</zeit>
+      <art>1 Plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_104659_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 10:42:12</zeit>
+      <art>1 Plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_104212_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>26.05.2025 10:36:03</zeit>
+      <art>1 Plastik</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_103603_1 Plastik_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>Unbekannt Unbekannt</zeit>
+      <art>Unbekannt</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_1 Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>Unbekannt Unbekannt</zeit>
+      <art>Unbekannt</art>
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_0 Papier.jpg</bild_url>
+    </eintrag>
   </benutzer>
 </logbuch>

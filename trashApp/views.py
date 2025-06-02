@@ -437,6 +437,8 @@ def api_upload(request):
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
 #S
+KLASSIFIKATION_ORDNER = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
+
 @csrf_exempt
 def eintragArtAendern(request):
     if request.method == "POST":
@@ -448,8 +450,7 @@ def eintragArtAendern(request):
             return JsonResponse({"error": "Fehlende Daten"}, status=400)
 
         try:
-            from lxml import etree
-            logbuch_baum = etree.parse(LOGBUCH_XML_PATH)
+            logbuch_baum = ET.parse(LOGBUCH_XML_PATH)
             logbuch_root = logbuch_baum.getroot()
         except Exception as e:
             return JsonResponse({"error": f"XML konnte nicht geladen werden: {e}"}, status=500)
@@ -461,35 +462,34 @@ def eintragArtAendern(request):
         eintrag_gefunden = False
         for eintrag in benutzer_log.findall("eintrag"):
             if eintrag.findtext("zeit") == alte_zeit:
-                alte_art = eintrag.findtext("art")
                 eintrag.find("art").text = neue_art
 
                 bild_url = eintrag.findtext("bild_url")
                 if bild_url:
-                    # bild_url könnte ein relativer Pfad sein, z.B. "trashApp/static/klassifikation/benutzername/20250601_115859_Papier.jpg"
-                    # Absoluten Pfad zum Bild ermitteln:
-                    bild_pfad_absolut = os.path.join(settings.BASE_DIR, bild_url.replace('/', os.sep))
-                    
-                    alter_dateiname = os.path.basename(bild_pfad_absolut)
-                    ordner = os.path.dirname(bild_pfad_absolut)
+                    alter_dateiname = os.path.basename(bild_url)
+                    ordner_rel = os.path.dirname(bild_url).lstrip('/')
+                    ordner_abs = os.path.join(settings.BASE_DIR, ordner_rel.replace('/', os.sep))
 
-                    # Neuer Dateiname mit neuer Art
-                    neuer_dateiname = f"{alte_zeit}_{neue_art}.jpg"
-                    neuer_pfad_absolut = os.path.join(ordner, neuer_dateiname)
-
-                    # Datei umbenennen, falls sie existiert
-                    if os.path.exists(bild_pfad_absolut):
-                        try:
-                            os.rename(bild_pfad_absolut, neuer_pfad_absolut)
-                            # Pfad in XML als relativer Pfad zum BASE_DIR speichern (Linux-/Windows-unabhängig)
-                            relativer_pfad_neu = os.path.relpath(neuer_pfad_absolut, settings.BASE_DIR).replace(os.sep, '/')
-                            eintrag.find("bild_url").text = relativer_pfad_neu
-                        except Exception as e:
-                            return JsonResponse({"error": f"Fehler beim Umbenennen der Bilddatei: {e}"}, status=500)
+                    # Teile des Dateinamens: z.B. "20250601_115859_Papier.jpg"
+                    name, ext = os.path.splitext(alter_dateiname)
+                    teile = name.split('_')
+                    if len(teile) >= 3:
+                        teile[-1] = neue_art
+                        neuer_dateiname = "_".join(teile) + ext
                     else:
-                        # Datei nicht gefunden, nur Pfad in XML anpassen
-                        relativer_pfad_neu = os.path.relpath(neuer_pfad_absolut, settings.BASE_DIR).replace(os.sep, '/')
-                        eintrag.find("bild_url").text = relativer_pfad_neu
+                        neuer_dateiname = f"{alte_zeit}_{neue_art}.jpg"
+
+                    alter_pfad = os.path.join(ordner_abs, alter_dateiname)
+                    neuer_pfad = os.path.join(ordner_abs, neuer_dateiname)
+
+                    try:
+                        if os.path.exists(alter_pfad):
+                            os.rename(alter_pfad, neuer_pfad)
+                        # neuen relativen Pfad speichern
+                        neuer_rel_pfad = os.path.join(ordner_rel, neuer_dateiname).replace(os.sep, '/')
+                        eintrag.find("bild_url").text = neuer_rel_pfad
+                    except Exception as e:
+                        return JsonResponse({"error": f"Fehler beim Umbenennen der Bilddatei: {e}"}, status=500)
 
                 eintrag_gefunden = True
                 break
@@ -505,7 +505,6 @@ def eintragArtAendern(request):
         return redirect('/tr/dashboard')
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
-
 
 
 

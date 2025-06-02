@@ -466,11 +466,6 @@ def eintragArtAendern(request):
             return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
 
         logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
-        return HttpResponse("""
-                            <script>
-                                alert("Eintrag erfolgreich geändert");
-                                window.location.href = '/tr/dashboard';
-                            </script>
-                            """)
+
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)

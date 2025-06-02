@@ -127,16 +127,17 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form method="POST" action="{% url 'eintrag_art_aendern' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
-                                        <select name="neue_art">
-                                            <option {% if eintrag.art == 'Papier' %}selected{% endif %}>Papier</option>
-                                            <option {% if eintrag.art == 'Plastik' %}selected{% endif %}>Plastik</option>
-                                            <option {% if eintrag.art == 'Restmüll' %}selected{% endif %}>Restmüll</option>
-                                            <option {% if eintrag.art == 'Uneindeutig' %}selected{% endif %}>Uneindeutig</option>
-                                        </select>
-                                        <button type="submit">Ändern</button>
+                                    <form method="post" action="/tr/logbuch/aendern/">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="uuid" value="{{ request.session.uuid }}">
+                                    <input type="hidden" name="zeit" value="{{ eintrag.zeit }}">
+                                    <select name="neue_art">
+                                        <option value="Papier">Papier</option>
+                                        <option value="Plastik">Plastik</option>
+                                        <option value="Restmüll">Restmüll</option>
+                                        <option value="Uneindeutig">Uneindeutig</option>
+                                    </select>
+                                    <button type="submit">Ändern</button>
                                     </form>
                                 </td>
                             </tr>

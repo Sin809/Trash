@@ -466,9 +466,12 @@ def eintragArtAendern(request):
 
                 bild_url = eintrag.findtext("bild_url")
                 if bild_url:
+                    ordner_rel = os.path.dirname(bild_url)
+                    # Führenden '/' entfernen, falls vorhanden, für Dateipfad-Zugriff
+                    if ordner_rel.startswith('/'):
+                        ordner_rel = ordner_rel[1:]
+
                     alter_dateiname = os.path.basename(bild_url)
-                    ordner_rel = os.path.dirname(bild_url).lstrip('/')
-                    ordner_abs = os.path.join(settings.BASE_DIR, ordner_rel.replace('/', os.sep))
 
                     # Teile des Dateinamens: z.B. "20250601_115859_Papier.jpg"
                     name, ext = os.path.splitext(alter_dateiname)
@@ -479,14 +482,19 @@ def eintragArtAendern(request):
                     else:
                         neuer_dateiname = f"{alte_zeit}_{neue_art}.jpg"
 
+                    ordner_abs = os.path.join(settings.BASE_DIR, ordner_rel.replace('/', os.sep))
                     alter_pfad = os.path.join(ordner_abs, alter_dateiname)
                     neuer_pfad = os.path.join(ordner_abs, neuer_dateiname)
 
                     try:
                         if os.path.exists(alter_pfad):
                             os.rename(alter_pfad, neuer_pfad)
-                        # neuen relativen Pfad speichern
+
+                        # Neuen relativen Pfad für URL mit führendem '/'
                         neuer_rel_pfad = os.path.join(ordner_rel, neuer_dateiname).replace(os.sep, '/')
+                        if not neuer_rel_pfad.startswith('/'):
+                            neuer_rel_pfad = '/' + neuer_rel_pfad
+
                         eintrag.find("bild_url").text = neuer_rel_pfad
                     except Exception as e:
                         return JsonResponse({"error": f"Fehler beim Umbenennen der Bilddatei: {e}"}, status=500)

@@ -152,7 +152,9 @@
         <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeSystemstatus('systemstatusid')">Systemstatus</h2>
             <div id="systemstatusid">
-                <p class="statusanzeige">Raspberry Pi ist online</p>
+                <p class="statusanzeige">
+                    Raspberry Pi ist {% if rpi_online %}online{% else %}offline{% endif %}
+                </p>
             </div>
         </div>
 

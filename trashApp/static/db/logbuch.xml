@@ -303,6 +303,18 @@
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250527_161644_0 Papier.jpg</bild_url>
     </eintrag>
+    <eintrag>
+      <zeit>21.06.2025 22:25</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>Mustermann</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>21.06.2025 22:25</zeit>
+      <art>Plastik</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>Mustermann</benutzername>
+    </eintrag>
   </benutzer>
   <benutzer benutzer_id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
     <eintrag>

@@ -6,6 +6,7 @@ from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
+import socket
 
 #A noch unklar
 from django.core.files.storage import default_storage
@@ -227,10 +228,24 @@ def dashboard_html(request):
         prozent = min(round((count / 10) * 100), 100)
         fuellstaende[art.lower()] = prozent
 
+
+    rPiHostname = "sinanpi" #hier einfach ip vom eigenen pi eintragen, dann wird ne TCP-Verbindung aufgebaut
+    rPiOnline = checkRPiOnline(rPiHostname)
+
     return render(request, 'trashApp/dashboard.html', {
         'logbuch_eintraege': eintraege,
-        'fuellstaende': fuellstaende
+        'fuellstaende': fuellstaende,
+        'rpi_online': rPiOnline
     })
+
+#S
+def checkRPiOnline(hostname, port=22, timeout=1):
+    try:
+        with socket.create_connection((hostname, port), timeout=timeout):
+            return True
+    except:
+        return False
+
 
 #S
 BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")
@@ -423,10 +438,12 @@ def update_benutzer_status(benutzer_id, neuer_status):
 
     return redirect('admin')
 
+
 #S
 def logout(request):
     request.session.flush()
     return redirect('login')
+
 
 #A
 def kontakt_email(request):

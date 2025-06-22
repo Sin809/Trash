@@ -239,6 +239,53 @@ def parse_last_line_simple(line):
     return line.strip()
 
 #S
+def get_system_resources(host, port, user, password):
+    commands = {
+        "RAM": "free -h",
+        "Laufzeit": "uptime -p",
+        "Load Average": "cat /proc/loadavg",
+        "GPU-Speicher (Pi)": "vcgencmd get_mem gpu",
+        "Temperatur (Pi)": "vcgencmd measure_temp",
+        "Spannung (Pi)": "vcgencmd measure_volts",
+        "CPU Info": "lscpu",
+        "CPU Details": "cat /proc/cpuinfo"
+    }
+
+    results = {}
+
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(hostname=host, port=port, username=user, password=password)
+
+        for key, cmd in commands.items():
+            stdin, stdout, stderr = ssh.exec_command(cmd)
+            output = stdout.read().decode()
+            error = stderr.read().decode()
+            if error:
+                results[key] = f"Error: {error.strip()}"
+            else:
+                filtered_output = output.strip()
+
+                if key == "CPU Details":
+                    lines = filtered_output.splitlines()
+                    filtered_lines = [line for line in lines if "Features" not in line]
+                    filtered_output = "\n".join(filtered_lines)
+
+                elif key == "CPU Info":
+                    lines = filtered_output.splitlines()
+                    filtered_lines = [line for line in lines if ("Vulnerability" not in line and "Flags" not in line)]
+                    filtered_output = "\n".join(filtered_lines)
+
+                results[key] = filtered_output
+
+        ssh.close()
+    except Exception as e:
+        return {"error": str(e)}
+
+    return results
+    
+#S
 def system_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -254,6 +301,9 @@ def system_html(request):
 
     if rpi_online and benutzername and passwort:
         login_history = readLoginHistory(hostname, port, benutzername, passwort)
+        system_resources = get_system_resources(hostname, port, benutzername, passwort)
+    else:
+        system_resources = {}
 
     return render(request, 'trashApp/system.html', {
         "rpi_online": rpi_online,
@@ -262,6 +312,7 @@ def system_html(request):
         "port": port,
         "passwort": passwort,
         "benutzername": benutzername,
+        "system_resources": system_resources,
     })
 
 #S
@@ -295,10 +346,22 @@ def dashboard_html(request):
         prozent = min(round((count / 10) * 100), 100)
         fuellstaende[art.lower()] = prozent
 
+    hostname = request.POST.get("hostname", "")
+    benutzername = request.POST.get("benutzername", "")
+    passwort = request.POST.get("passwort", "")
+    port = int(request.POST.get("port", 22))
+
+    rpi_online = checkRPiOnline(hostname, port)
+    login_history = []
+
+    if rpi_online and benutzername and passwort:
+        login_history = readLoginHistory(hostname, port, benutzername, passwort)
+
     return render(request, 'trashApp/dashboard.html', {
         "logbuch_eintraege": eintraege,
         "fuellstaende": fuellstaende,
     })
+
 
 #S
 BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")

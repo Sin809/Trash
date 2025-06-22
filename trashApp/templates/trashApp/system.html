@@ -16,19 +16,21 @@
         <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeSystemstatus('systemstatusid')">Systemstatus</h2>
             <div id="systemstatusid">
-                <form method="post">
+                <form method="post" id="systemeingabeid">
                     {% csrf_token %}
-                    <label>Hostname:</label>
-                    <input class="kleinesEingabefeld" type="text" name="hostname" value="{{ hostname }}">
                     
-                    <label>Benutzername:</label>
-                    <input class="kleinesEingabefeld" type="text" name="benutzername" value="{{ benutzername }}">
-
-                    <label>Passwort:</label>
-                    <input class="kleinesEingabefeld" type="text" name="passwort" value="{{ passwort }}">
-
-                    <label>Port:</label>
-                    <input class="kleinesEingabefeld" type="number" name="port" value="{{ port }}">
+                    <label for="hostname">Hostname:</label>
+                    <input class="kleinesEingabefeld" type="text" id="hostname" name="hostname" value="{{ hostname }}">
+                    
+                    <label for="benutzername">Benutzername:</label>
+                    <input class="kleinesEingabefeld" type="text" id="benutzername" name="benutzername" value="{{ benutzername }}">
+                    
+                    <label for="passwort">Passwort:</label>
+                    <input class="kleinesEingabefeld" type="text" id="passwort" name="passwort" value="{{ passwort }}">
+                    
+                    <label for="port">Port:</label>
+                    <input class="kleinesEingabefeld" type="number" id="port" name="port" value="{{ port }}">
+                    
                     <button type="submit">Verbindung prüfen</button>
                 </form>
 
@@ -59,6 +61,26 @@
                     </table>
                 {% else %}
                     <p>Keine Login-Historie verfügbar, da der Pi offline ist.</p>
+                {% endif %}
+
+                {% if system_resources %}
+                    <h2>Systemressourcen</h2>
+                    <table class="tabellenScrollerClass">
+                        <thead>
+                            <tr>
+                                <th class="zentriert">Ressource</th>
+                                <th>Wert</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in system_resources.items %}
+                                <tr>
+                                    <td class="zentriert">{{ key }}</td>
+                                    <td><pre>{{ value }}</pre></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 {% endif %}
             </div>
         </div>

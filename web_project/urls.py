@@ -36,7 +36,6 @@ urlpatterns = [
     path('tr/admin/benutzer/sperren/<uuid:benutzer_id>/', tmpl_views.sperren_benutzer, name='sperren_benutzer'),
     path('tr/admin/benutzer/entsperren/<uuid:benutzer_id>/', tmpl_views.entsperren_benutzer, name='entsperren_benutzer'),
     path('tr/system', tmpl_views.system_html, name='system'),
-
 ]
 
  

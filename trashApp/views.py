@@ -239,6 +239,32 @@ def parse_last_line_simple(line):
     return line.strip()
 
 #S
+def system_html(request):
+    check = benutzer_ist_eingeloggt(request)
+    if check:
+        return check
+    
+    hostname = request.POST.get("hostname", "")
+    benutzername = request.POST.get("benutzername", "")
+    passwort = request.POST.get("passwort", "")
+    port = int(request.POST.get("port", 22))
+
+    rpi_online = checkRPiOnline(hostname, port)
+    login_history = []
+
+    if rpi_online and benutzername and passwort:
+        login_history = readLoginHistory(hostname, port, benutzername, passwort)
+
+    return render(request, 'trashApp/system.html', {
+        "rpi_online": rpi_online,
+        "login_history": login_history,
+        "hostname": hostname,
+        "port": port,
+        "passwort": passwort,
+        "benutzername": benutzername,
+    })
+
+#S
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -269,28 +295,10 @@ def dashboard_html(request):
         prozent = min(round((count / 10) * 100), 100)
         fuellstaende[art.lower()] = prozent
 
-    hostname = request.POST.get("hostname", "")
-    benutzername = request.POST.get("benutzername", "")
-    passwort = request.POST.get("passwort", "")
-    port = int(request.POST.get("port", 22))
-
-    rpi_online = checkRPiOnline(hostname, port)
-    login_history = []
-
-    if rpi_online and benutzername and passwort:
-        login_history = readLoginHistory(hostname, port, benutzername, passwort)
-
     return render(request, 'trashApp/dashboard.html', {
         "logbuch_eintraege": eintraege,
         "fuellstaende": fuellstaende,
-        "rpi_online": rpi_online,
-        "login_history": login_history,
-        "hostname": hostname,
-        "port": port,
-        "passwort": passwort,
-        "benutzername": benutzername,
     })
-
 
 #S
 BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")

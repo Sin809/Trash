@@ -24,7 +24,10 @@
                             <td>{{ fuellstaende.papier }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                <div class="fuellbalken" style="width: {{ fuellstaende.papier }}%; background-color: {% if fuellstaende.papier >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};"></div>
+                                    <div class="fuellbalken 
+                                        {% if fuellstaende.papier >= 80 %}rot{% else %}gruen{% endif %}" 
+                                        style="width: {{ fuellstaende.papier }}%;">
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -33,7 +36,10 @@
                             <td>{{ fuellstaende.plastik }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                <div class="fuellbalken" style="width: {{ fuellstaende.plastik }}%; background-color: {% if fuellstaende.plastik >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};"></div>
+                                    <div class="fuellbalken 
+                                        {% if fuellstaende.plastik >= 80 %}rot{% else %}gruen{% endif %}" 
+                                        style="width: {{ fuellstaende.plastik }}%;">
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -42,10 +48,9 @@
                             <td>{{ fuellstaende.restmüll }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="
-                                        width: {{ fuellstaende.restmüll }}%;
-                                        background-color: {% if fuellstaende.restmüll >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};
-                                        ">
+                                    <div class="fuellbalken 
+                                        {% if fuellstaende.plastik >= 80 %}rot{% else %}gruen{% endif %}"  
+                                        style="width: {{ fuellstaende.restmüll }}%;">
                                     </div>
                                 </div>
                             </td>
@@ -55,10 +60,9 @@
                             <td>{{ fuellstaende.uneindeutig }}%</td>
                             <td>
                                 <div class="fuellbalkenHintergrund">
-                                    <div class="fuellbalken" style="
-                                        width: {{ fuellstaende.uneindeutig }}%;
-                                        background-color: {% if fuellstaende.uneindeutig >= 80 %}#e74c3c{% else %}#2ecc71{% endif %};
-                                        ">
+                                    <div class="fuellbalken 
+                                        {% if fuellstaende.uneindeutig >= 80 %}rot{% else %}gruen{% endif %}"  
+                                        style="width: {{ fuellstaende.uneindeutig }}%;">
                                     </div>
                                 </div>
                             </td>
@@ -147,18 +151,66 @@
                     </tbody>
                 </table>
             </div>
+        </div>
 
 
         <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeSystemstatus('systemstatusid')">Systemstatus</h2>
             <div id="systemstatusid">
-                <p class="statusanzeige">
-                    Raspberry Pi ist {% if rpi_online %}online{% else %}offline{% endif %}
-                </p>
+                <form method="post">
+                    {% csrf_token %}
+                    <label>Hostname:</label>
+                    <input class="kleinesEingabefeld" type="text" name="hostname" value="{{ hostname }}">
+                    
+                    <label>Benutzername:</label>
+                    <input class="kleinesEingabefeld" type="text" name="benutzername" value="{{ benutzername }}">
+
+                    <label>Passwort:</label>
+                    <input class="kleinesEingabefeld" type="text" name="passwort" value="{{ passwort }}">
+
+                    <label>Port:</label>
+                    <input class="kleinesEingabefeld" type="number" name="port" value="{{ port }}">
+                    <button type="submit">Verbindung prüfen</button>
+                </form>
+
+                <div class="standardDivclass">
+                    <p class="statusanzeige {% if rpi_online %}online{% else %}offline{% endif %}">
+                        Raspberry Pi ist {% if rpi_online %}online{% else %}offline{% endif %}
+                    </p>
+                </div>
+                
+
+                {% if login_history %}
+                    <h3>Login-Historie</h3>
+                    <table class="tabellenScrollerClass">
+                        <thead>
+                            <tr>
+                                <th>Benutzer</th>
+                                <th>TTY</th>
+                                <th>IP / Host</th>
+                                <th>Datum</th>
+                                <th>Zeitinfo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eintrag in login_history %}
+                            <tr>
+                                <td>{{ eintrag.user }}</td>
+                                <td>{{ eintrag.tty }}</td>
+                                <td>{{ eintrag.ip }}</td>
+                                <td>{{ eintrag.datum_schoen }}</td>
+                                <td>{{ eintrag.zeitinfo }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Keine Login-Historie verfügbar.</p>
+                {% endif %}
             </div>
         </div>
 
-    </div>
+        
 
     {% include "trashApp/banner.html" %}
 </body>

@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
 import socket
+import paramiko
 
 #A noch unklar
 from django.core.files.storage import default_storage
@@ -198,6 +199,62 @@ def profil_bearbeiten(request):
     return redirect('profil')
 
 #S
+def checkRPiOnline(hostname, port=22, timeout=1):
+    try:
+        with socket.create_connection((hostname, port), timeout=timeout):
+            return True
+    except:
+        return False
+    
+#S
+def readLoginHistory(hostname, port, username, password):
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(hostname, port=port, username=username, password=password, timeout=5)
+        stdin, stdout, stderr = ssh.exec_command("last -n 5")
+        history = stdout.read().decode('utf-8')
+        ssh.close()
+        return history
+    except Exception as e:
+        return f"Fehler beim Lesen der Login-Historie: {e}"
+
+
+def parse_pretty_date(tag, monat, tag_im_monat):
+    try:
+        datum_str = f"{tag} {monat} {tag_im_monat} 2025"
+        datum = datetime.strptime(datum_str, "%a %b %d %Y")
+        return datum.strftime("%d. %B %Y (%A)")
+    except:
+        return f"{tag_im_monat}. {monat} ({tag})"
+
+
+#S
+def parse_last_line_simple(line):
+    parts = line.split()
+
+    user = parts[0] if len(parts) > 0 else ""
+    tty = parts[1] if len(parts) > 1 else ""
+    ip = parts[2] if len(parts) > 2 else ""
+    day = parts[3] if len(parts) > 3 else ""
+    month = parts[4] if len(parts) > 4 else ""
+    date = parts[5] if len(parts) > 5 else ""
+    time_info = " ".join(parts[6:]) if len(parts) > 6 else ""
+
+    pretty_date = parse_pretty_date(day, month, date)
+
+    return {
+        "user": user,
+        "tty": tty,
+        "ip": ip,
+        "tag": day,
+        "monat": month,
+        "datum": date,
+        "zeitinfo": time_info,
+        "datum_schoen": pretty_date,
+    }
+
+#S
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -228,23 +285,32 @@ def dashboard_html(request):
         prozent = min(round((count / 10) * 100), 100)
         fuellstaende[art.lower()] = prozent
 
+    hostname = request.POST.get("hostname", "")
+    benutzername = request.POST.get("benutzername", "")
+    passwort = request.POST.get("passwort", "")
+    port = int(request.POST.get("port", 22))
 
-    rPiHostname = "sinanpi" #hier einfach ip vom eigenen pi eintragen, dann wird ne TCP-Verbindung aufgebaut
-    rPiOnline = checkRPiOnline(rPiHostname)
+    rpi_online = checkRPiOnline(hostname, port)
+    login_history_raw = ""
+    login_history = []
+
+    if rpi_online and benutzername and passwort:
+        login_history_raw = readLoginHistory(hostname, port, benutzername, passwort)
+
+        if login_history_raw and not login_history_raw.startswith("Fehler"):
+            for line in login_history_raw.strip().split("\n"):
+                login_history.append(parse_last_line_simple(line))
 
     return render(request, 'trashApp/dashboard.html', {
-        'logbuch_eintraege': eintraege,
-        'fuellstaende': fuellstaende,
-        'rpi_online': rPiOnline
+        "logbuch_eintraege": eintraege,
+        "fuellstaende": fuellstaende,
+        "rpi_online": rpi_online,
+        "login_history": login_history,
+        "hostname": hostname,
+        "port": port,
+        "passwort": passwort,
+        "benutzername": benutzername,
     })
-
-#S
-def checkRPiOnline(hostname, port=22, timeout=1):
-    try:
-        with socket.create_connection((hostname, port), timeout=timeout):
-            return True
-    except:
-        return False
 
 
 #S

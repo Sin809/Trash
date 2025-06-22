@@ -100,6 +100,19 @@ body {
     height: 100%;
 }
 
+.fuellbalken.gruen {
+    background-color: green;
+}
+
+.fuellbalken.rot {
+    background-color: red;
+}
+
+.kleinesEingabefeld {
+    width: 100px;
+    padding: 5px;
+}
+
 
 
 .filterDropdown {
@@ -108,11 +121,21 @@ body {
 }
 
 .statusanzeige {
-    padding: 10px;
+    margin: 10px;
+    padding: 5px;
     border-radius: 5px;
     font-weight: bold;
     width: fit-content;
     margin-top: 10px;
+    font-size: 20px;
+}
+
+.statusanzeige.online {
+    color: green;
+}
+
+.statusanzeige.offline {
+    color: red;
 }
 
 .tabellenScrollerClass {

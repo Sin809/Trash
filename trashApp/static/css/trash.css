@@ -122,6 +122,10 @@ body {
     margin-top: 30px;
 }
 
+.zentriert {
+    text-align: center;
+}
+
 #statusdivid {
     max-width: 900px;
     margin-top: 20px;

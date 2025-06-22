@@ -212,47 +212,31 @@ def readLoginHistory(hostname, port, username, password):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(hostname, port=port, username=username, password=password, timeout=5)
-        stdin, stdout, stderr = ssh.exec_command("last -n 5")
-        history = stdout.read().decode('utf-8')
+        stdin, stdout, stderr = ssh.exec_command("last -n 10")
+        history_raw = stdout.read().decode('utf-8')
         ssh.close()
-        return history
+
+        lines = history_raw.splitlines()
+        login_history = []
+        nummer = 1
+
+        for line in lines:
+            line = line.strip()
+            if line and not line.startswith(("wtmp begins", "reboot", "shutdown")):
+                login_history.append({
+                    "nummer": nummer,
+                    "text": line
+                })
+                nummer += 1
+
+        return login_history
+
     except Exception as e:
-        return f"Fehler beim Lesen der Login-Historie: {e}"
-
-
-def parse_pretty_date(tag, monat, tag_im_monat):
-    try:
-        datum_str = f"{tag} {monat} {tag_im_monat} 2025"
-        datum = datetime.strptime(datum_str, "%a %b %d %Y")
-        return datum.strftime("%d. %B %Y (%A)")
-    except:
-        return f"{tag_im_monat}. {monat} ({tag})"
-
+        return [{"nummer": "-", "text": f"Fehler beim Lesen der Login-Historie: {e}"}]
 
 #S
 def parse_last_line_simple(line):
-    parts = line.split()
-
-    user = parts[0] if len(parts) > 0 else ""
-    tty = parts[1] if len(parts) > 1 else ""
-    ip = parts[2] if len(parts) > 2 else ""
-    day = parts[3] if len(parts) > 3 else ""
-    month = parts[4] if len(parts) > 4 else ""
-    date = parts[5] if len(parts) > 5 else ""
-    time_info = " ".join(parts[6:]) if len(parts) > 6 else ""
-
-    pretty_date = parse_pretty_date(day, month, date)
-
-    return {
-        "user": user,
-        "tty": tty,
-        "ip": ip,
-        "tag": day,
-        "monat": month,
-        "datum": date,
-        "zeitinfo": time_info,
-        "datum_schoen": pretty_date,
-    }
+    return line.strip()
 
 #S
 def dashboard_html(request):
@@ -291,15 +275,10 @@ def dashboard_html(request):
     port = int(request.POST.get("port", 22))
 
     rpi_online = checkRPiOnline(hostname, port)
-    login_history_raw = ""
     login_history = []
 
     if rpi_online and benutzername and passwort:
-        login_history_raw = readLoginHistory(hostname, port, benutzername, passwort)
-
-        if login_history_raw and not login_history_raw.startswith("Fehler"):
-            for line in login_history_raw.strip().split("\n"):
-                login_history.append(parse_last_line_simple(line))
+        login_history = readLoginHistory(hostname, port, benutzername, passwort)
 
     return render(request, 'trashApp/dashboard.html', {
         "logbuch_eintraege": eintraege,

@@ -185,22 +185,16 @@
                     <table class="tabellenScrollerClass">
                         <thead>
                             <tr>
-                                <th>Benutzer</th>
-                                <th>TTY</th>
-                                <th>IP / Host</th>
-                                <th>Datum</th>
-                                <th>Zeitinfo</th>
+                                <th class="zentriert">#</th>
+                                <th>Daten</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for eintrag in login_history %}
-                            <tr>
-                                <td>{{ eintrag.user }}</td>
-                                <td>{{ eintrag.tty }}</td>
-                                <td>{{ eintrag.ip }}</td>
-                                <td>{{ eintrag.datum_schoen }}</td>
-                                <td>{{ eintrag.zeitinfo }}</td>
-                            </tr>
+                                <tr>
+                                    <td class="zentriert">{{ eintrag.nummer }}</td>
+                                    <td>{{ eintrag.text }}</td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>

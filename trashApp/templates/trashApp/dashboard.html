@@ -173,7 +173,7 @@
                     <button type="submit">Verbindung prüfen</button>
                 </form>
 
-                <div class="standardDivclass">
+                <div id="statusdivid">
                     <p class="statusanzeige {% if rpi_online %}online{% else %}offline{% endif %}">
                         Raspberry Pi ist {% if rpi_online %}online{% else %}offline{% endif %}
                     </p>
@@ -181,7 +181,7 @@
                 
 
                 {% if login_history %}
-                    <h3>Login-Historie</h3>
+                    <h2 id="loginHistorieId">Login-Historie</h2>
                     <table class="tabellenScrollerClass">
                         <thead>
                             <tr>
@@ -205,7 +205,7 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <p>Keine Login-Historie verfügbar.</p>
+                    <p>Keine Login-Historie verfügbar, da der Pi offline ist.</p>
                 {% endif %}
             </div>
         </div>

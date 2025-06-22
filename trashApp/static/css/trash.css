@@ -113,19 +113,30 @@ body {
     padding: 5px;
 }
 
-
-
 .filterDropdown {
     padding: 8px;
     margin-bottom: 10px;
 }
 
+#loginHistorieId {
+    margin-top: 30px;
+}
+
+#statusdivid {
+    max-width: 900px;
+    margin-top: 20px;
+    padding-top: 15px;
+    padding-bottom: 5px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /*erster Wert=waagerechte Verschiebung; zweiter Wert=vertikale Verschiebung; dritter Wert=Schärferadius*/
+}
+
 .statusanzeige {
-    margin: 10px;
+    margin: 20px;
     padding: 5px;
     border-radius: 5px;
     font-weight: bold;
-    width: fit-content;
     margin-top: 10px;
     font-size: 20px;
 }

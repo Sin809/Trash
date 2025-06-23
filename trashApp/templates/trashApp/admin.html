@@ -19,7 +19,9 @@
                     <tr>
                         <th>Benutzername</th>
                         <th>Rolle</th>
-                        <th>Status</th>
+                        <th>Rolle hochsetzetn</th>
+                        <th>Rolle herabsetzen</th> 
+                        <th>Status</th>                       
                         <th>Sperren/Entsperren</th>
                     </tr>
                 </thead>
@@ -28,6 +30,16 @@
                         <tr>
                             <td>{{ benutzer.benutzername }}</td>
                             <td>{{ benutzer.rolle }}</td>
+                            <td>
+                                {% if benutzer.rolle != 'admin' %}
+                                    <a class="linkButton" href="{% url 'rolle_hochsetzen' benutzer.id %}">Hoch</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if benutzer.rolle != 'user' %}
+                                    <a class="linkButton" href="{% url 'rolle_runtersetzen' benutzer.id %}">Runter</a>
+                                {% endif %}
+                            </td>
                             <td>{{ benutzer.status }}</td>
                             <td>
                                 {% if benutzer.status == "aktiv" %}
@@ -44,60 +56,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-
-        <div class="standardDivclass">
-            <h3 class="versteckenclass" onclick="versteckeMuelleimer('muelleimerid')">Mülleimer-Übersicht</h3>
-            <table id="muelleimerid">
-                <thead>
-                    <tr>
-                        <th>Mülleimername</th>
-                        <th>Mülleimer-ID</th>
-                        <th>Aktionen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Plastik</td>
-                        <td>1</td>
-                        <td>
-                            <a class="linkButton" >Entfernen</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Papier</td>
-                        <td>2</td>
-                        <td>
-                            <a class="linkButton" >Entfernen</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Restmüll</td>
-                        <td>3</td>
-                        <td>
-                            <a class="linkButton" >Entfernen</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Uneindeutig</td>
-                        <td>4</td>
-                        <td>
-                            <a class="linkButton" >Entfernen</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">Es gibt derzeit keine Mülleimer.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Neuen Mülleimer hinzufügen</h3>
-            <form method="POST">
-                {% csrf_token %}
-                <label for="muelleimername">Name des Mülleimers:</label>
-                <input type="text" name="muelleimername" id="muelleimername" required />
-                <button type="submit">Hinzufügen</button>
-            </form>
         </div>
     </div>
     {% include "trashApp/banner.html" %}

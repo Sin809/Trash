@@ -291,6 +291,16 @@ def system_html(request):
     if check:
         return check
     
+    benutzer_id = request.session.get('uuid')
+
+    if not benutzer_id or not ist_admin(str(benutzer_id)):
+        return HttpResponse("""
+            <script>
+                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
+                window.history.back();
+            </script>
+        """)
+    
     hostname = request.POST.get("hostname", "")
     benutzername = request.POST.get("benutzername", "")
     passwort = request.POST.get("passwort", "")
@@ -346,20 +356,14 @@ def dashboard_html(request):
         prozent = min(round((count / 10) * 100), 100)
         fuellstaende[art.lower()] = prozent
 
-    hostname = request.POST.get("hostname", "")
-    benutzername = request.POST.get("benutzername", "")
-    passwort = request.POST.get("passwort", "")
-    port = int(request.POST.get("port", 22))
-
-    rpi_online = checkRPiOnline(hostname, port)
-    login_history = []
-
-    if rpi_online and benutzername and passwort:
-        login_history = readLoginHistory(hostname, port, benutzername, passwort)
+    rpi_online = False
+    if request.method == "POST":
+        rpi_online = checkRPiOnline("sinanpi", 22)
 
     return render(request, 'trashApp/dashboard.html', {
         "logbuch_eintraege": eintraege,
         "fuellstaende": fuellstaende,
+        "rpi_online": rpi_online,
     })
 
 
@@ -461,28 +465,77 @@ def eintragLoeschen(request):
 
     return redirect('dashboard')
 
+#S
+def ist_admin(benutzer_id):
+    try:
+        tree = ET.parse(XML_PATH)
+        root = tree.getroot()
+
+        for benutzer in root.findall('benutzer'):
+            if benutzer.get('id') == benutzer_id:
+                return benutzer.findtext('rolle') == 'admin'
+    except:
+        return False
+
+    return False
 
 #S
 def admin_html(request):
-    check = benutzer_ist_eingeloggt(request)
-    if check: 
-        return check
+    benutzer_id = request.session.get('uuid')
 
+    if not benutzer_id or not ist_admin(str(benutzer_id)):
+        return HttpResponse("""
+            <script>
+                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Admin-Verwaltung.");
+                window.history.back();
+            </script>
+        """)
+
+    # Benutzerdaten laden
     benutzer_liste = []
     with open(XML_PATH, 'r', encoding='utf-8') as f:
-            tree = ET.parse(f)
-            root = tree.getroot()
+        tree = ET.parse(f)
+        root = tree.getroot()
 
-            for benutzer in root.findall('benutzer'):
-                benutzer_liste.append({
-                    'id': benutzer.get('id'),
-                    'benutzername': benutzer.findtext('benutzername'),
-                    'email': benutzer.findtext('email'),
-                    'rolle': benutzer.findtext('rolle'),
-                    'status': benutzer.findtext('status'),
-                })
+        for benutzer in root.findall('benutzer'):
+            benutzer_liste.append({
+                'id': benutzer.get('id'),
+                'benutzername': benutzer.findtext('benutzername'),
+                'email': benutzer.findtext('email'),
+                'rolle': benutzer.findtext('rolle'),
+                'status': benutzer.findtext('status'),
+            })
 
-    return render(request, 'trashApp/admin.html', {'benutzer_liste': benutzer_liste,})
+    return render(request, 'trashApp/admin.html', {'benutzer_liste': benutzer_liste})
+
+
+#S
+def rolle_hochsetzen(request, benutzer_id):
+    tree = ET.parse(XML_PATH)
+    root = tree.getroot()
+
+    for benutzer in root.findall('benutzer'):
+        if benutzer.get('id') == str(benutzer_id):
+            rolle_element = benutzer.find('rolle')
+            if rolle_element is not None:
+                rolle_element.text = 'admin'
+                tree.write(XML_PATH, encoding='utf-8', xml_declaration=True)
+                break
+    return redirect('admin')
+
+#S
+def rolle_runtersetzen(request, benutzer_id):
+    tree = ET.parse(XML_PATH)
+    root = tree.getroot()
+
+    for benutzer in root.findall('benutzer'):
+        if benutzer.get('id') == str(benutzer_id):
+            rolle_element = benutzer.find('rolle')
+            if rolle_element is not None:
+                rolle_element.text = 'user'
+                tree.write(XML_PATH, encoding='utf-8', xml_declaration=True)
+                break
+    return redirect('admin')
 
 #S
 def sperren_benutzer(request, benutzer_id):

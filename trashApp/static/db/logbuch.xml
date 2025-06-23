@@ -336,12 +336,6 @@
       <benutzername>Max</benutzername>
     </eintrag>
     <eintrag>
-      <zeit>2025.05.31 12:59:58</zeit>
-      <art>1 Plastik</art>
-      <bild_url>/static/klassifikation/Max/20250531_125958_1 Plastik.jpg</bild_url>
-      <benutzername>Max</benutzername>
-    </eintrag>
-    <eintrag>
       <zeit>2025.05.31 13:00:35</zeit>
       <art>0 Papier</art>
       <bild_url>/static/klassifikation/Max/20250531_130035_0 Papier.jpg</bild_url>
@@ -369,6 +363,12 @@
       <zeit>2025.06.01 12:18:02</zeit>
       <art>0 Papier</art>
       <bild_url>/static/klassifikation/Max/20250601_121802_0 Papier.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.03 16:16:41</zeit>
+      <art>1 Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250603_161641_1 Plastik.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
   </benutzer>

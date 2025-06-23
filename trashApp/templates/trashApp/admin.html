@@ -18,21 +18,30 @@
                 <thead>
                     <tr>
                         <th>Benutzername</th>
-                        <th>Aktionen</th>
+                        <th>Rolle</th>
+                        <th>Status</th>
+                        <th>Sperren/Entsperren</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for benutzer in benutzer_liste %}
                         <tr>
+                            <td>{{ benutzer.benutzername }}</td>
+                            <td>{{ benutzer.rolle }}</td>
+                            <td>{{ benutzer.status }}</td>
                             <td>
-                                max muster
-                            </td>
-                            <td>
-                                <a class="linkButton" >Sperren</a>
+                                {% if benutzer.status == "aktiv" %}
+                                    <a class="linkButton" href="{% url 'sperren_benutzer' benutzer.id %}">Sperren</a>
+                                {% else %}
+                                    <a class="linkButton" href="{% url 'entsperren_benutzer' benutzer.id %}">Wieder aktivieren</a>
+                                {% endif %}
                             </td>
                         </tr>
+                    {% empty %}
                         <tr>
-                            <td colspan="2">Es gibt keine Benutzer.</td>
+                            <td colspan="4">Es gibt keine Benutzer.</td>
                         </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

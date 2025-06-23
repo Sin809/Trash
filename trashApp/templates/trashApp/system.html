@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Systemdaten</title>
+    <link rel="stylesheet" type="text/css" 
+        href="{% static 'css/trash.css' %}"/>
+        <script type="text/javascript" src="{% static 'scripts/script.js' %}"></script>
+
+</head>
+<body>
+    {% include "trashApp/navigationsleiste.html" %}
+
+    <div class="gesamtbereichclass">
+        <div class="standardDivclass">
+            <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeSystemstatus('systemstatusid')">Systemstatus</h2>
+            <div id="systemstatusid">
+                <form method="post" id="systemeingabeid">
+                    {% csrf_token %}
+                    
+                    <label for="hostname">Hostname:</label>
+                    <input class="kleinesEingabefeld" type="text" id="hostname" name="hostname" value="{{ hostname }}">
+                    
+                    <label for="benutzername">Benutzername:</label>
+                    <input class="kleinesEingabefeld" type="text" id="benutzername" name="benutzername" value="{{ benutzername }}">
+                    
+                    <label for="passwort">Passwort:</label>
+                    <input class="kleinesEingabefeld" type="text" id="passwort" name="passwort" value="{{ passwort }}">
+                    
+                    <label for="port">Port:</label>
+                    <input class="kleinesEingabefeld" type="number" id="port" name="port" value="{{ port }}">
+                    
+                    <button type="submit">Verbindung prüfen</button>
+                </form>
+
+                <div id="statusdivid">
+                    <p class="statusanzeige {% if rpi_online %}online{% else %}offline{% endif %}">
+                        Raspberry Pi ist {% if rpi_online %}online{% else %}offline{% endif %}
+                    </p>
+                </div>
+                
+
+                {% if login_history %}
+                    <h2 id="loginHistorieId">Login-Historie</h2>
+                    <table class="tabellenScrollerClass">
+                        <thead>
+                            <tr>
+                                <th class="zentriert">#</th>
+                                <th>Daten</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eintrag in login_history %}
+                                <tr>
+                                    <td class="zentriert">{{ eintrag.nummer }}</td>
+                                    <td>{{ eintrag.text }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Keine Login-Historie verfügbar, da der Pi offline ist.</p>
+                {% endif %}
+
+                {% if system_resources %}
+                    <h2>Systemressourcen</h2>
+                    <table class="tabellenScrollerClass">
+                        <thead>
+                            <tr>
+                                <th class="zentriert">Ressource</th>
+                                <th>Wert</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in system_resources.items %}
+                                <tr>
+                                    <td class="zentriert">{{ key }}</td>
+                                    <td><pre>{{ value }}</pre></td> <!--pre damit das sortiert (preformatted text) angezeigt wird und nicht alles in einem fließtext-->
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Keine Details verfügbar, da der Pi offline ist.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    {% include "trashApp/banner.html" %}
+</body>
+</html>

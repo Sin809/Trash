@@ -6,6 +6,8 @@ from email.message import EmailMessage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime
+import socket
+import paramiko
 
 #A noch unklar
 from django.core.files.storage import default_storage
@@ -19,12 +21,13 @@ XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
 
 #A
 class Benutzer:
-    def __init__(self, benutzername, email, passwort, rolle='user'):
+    def __init__(self, benutzername, email, passwort, rolle='user', status='aktiv'):
         self.id = str(uuid.uuid4())
         self.benutzername = benutzername
         self.email = email
         self.passwort = passwort
         self.rolle = rolle
+        self.status = status
 
     def als_xml_speichern(self):
         user = ET.Element('benutzer', id=self.id)
@@ -32,6 +35,7 @@ class Benutzer:
         ET.SubElement(user, 'email').text = self.email
         ET.SubElement(user, 'passwort').text = self.passwort
         ET.SubElement(user, 'rolle').text = self.rolle
+        ET.SubElement(user, 'status').text = self.status
         return user
 
 #S    
@@ -111,6 +115,16 @@ def login_html(request):
         benutzer = root.xpath(f"benutzer[benutzername='{benutzername}' and passwort='{passwort}']")
 
         if benutzer:
+            status = benutzer[0].xpath('status/text()')[0]
+
+            if status != "aktiv":
+                return HttpResponse("""
+                    <script>
+                        alert("Ihr Benutzerkonto ist gesperrt.");
+                        window.history.back();
+                    </script>
+                """)
+
             uuid = benutzer[0].xpath('@id')[0] #xpath abfragen geben immer listen als antwort, deswegen [0]
             rolle = benutzer[0].xpath('rolle/text()')[0] 
 
@@ -185,6 +199,123 @@ def profil_bearbeiten(request):
     return redirect('profil')
 
 #S
+def checkRPiOnline(hostname, port=22, timeout=1):
+    try:
+        with socket.create_connection((hostname, port), timeout=timeout):
+            return True
+    except:
+        return False
+    
+#S
+def readLoginHistory(hostname, port, username, password):
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(hostname, port=port, username=username, password=password, timeout=5)
+        stdin, stdout, stderr = ssh.exec_command("last -n 10")
+        history_raw = stdout.read().decode('utf-8')
+        ssh.close()
+
+        lines = history_raw.splitlines()
+        login_history = []
+        nummer = 1
+
+        for line in lines:
+            line = line.strip()
+            if line and not line.startswith(("wtmp begins", "reboot", "shutdown")):
+                login_history.append({
+                    "nummer": nummer,
+                    "text": line
+                })
+                nummer += 1
+
+        return login_history
+
+    except Exception as e:
+        return [{"nummer": "-", "text": f"Fehler beim Lesen der Login-Historie: {e}"}]
+
+#S
+def parse_last_line_simple(line):
+    return line.strip()
+
+#S
+def get_system_resources(host, port, user, password):
+    commands = {
+        "RAM": "free -h",
+        "Laufzeit": "uptime -p",
+        "Load Average": "cat /proc/loadavg",
+        "GPU-Speicher (Pi)": "vcgencmd get_mem gpu",
+        "Temperatur (Pi)": "vcgencmd measure_temp",
+        "Spannung (Pi)": "vcgencmd measure_volts",
+        "CPU Info": "lscpu",
+        "CPU Details": "cat /proc/cpuinfo"
+    }
+
+    results = {}
+
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(hostname=host, port=port, username=user, password=password)
+
+        for key, cmd in commands.items():
+            stdin, stdout, stderr = ssh.exec_command(cmd)
+            output = stdout.read().decode()
+            error = stderr.read().decode()
+            if error:
+                results[key] = f"Error: {error.strip()}"
+            else:
+                filtered_output = output.strip()
+
+                if key == "CPU Details":
+                    lines = filtered_output.splitlines()
+                    filtered_lines = [line for line in lines if "Features" not in line]
+                    filtered_output = "\n".join(filtered_lines)
+
+                elif key == "CPU Info":
+                    lines = filtered_output.splitlines()
+                    filtered_lines = [line for line in lines if ("Vulnerability" not in line and "Flags" not in line)]
+                    filtered_output = "\n".join(filtered_lines)
+
+                results[key] = filtered_output
+
+        ssh.close()
+    except Exception as e:
+        return {"error": str(e)}
+
+    return results
+    
+#S
+def system_html(request):
+    check = benutzer_ist_eingeloggt(request)
+    if check:
+        return check
+    
+    hostname = request.POST.get("hostname", "")
+    benutzername = request.POST.get("benutzername", "")
+    passwort = request.POST.get("passwort", "")
+    port = int(request.POST.get("port", 22))
+
+    rpi_online = checkRPiOnline(hostname, port)
+    login_history = []
+
+    if rpi_online and benutzername and passwort:
+        login_history = readLoginHistory(hostname, port, benutzername, passwort)
+        system_resources = get_system_resources(hostname, port, benutzername, passwort)
+    else:
+        system_resources = {}
+
+    return render(request, 'trashApp/system.html', {
+        "rpi_online": rpi_online,
+        "login_history": login_history,
+        "hostname": hostname,
+        "port": port,
+        "passwort": passwort,
+        "benutzername": benutzername,
+        "system_resources": system_resources,
+    })
+
+#S
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -215,10 +346,22 @@ def dashboard_html(request):
         prozent = min(round((count / 10) * 100), 100)
         fuellstaende[art.lower()] = prozent
 
+    hostname = request.POST.get("hostname", "")
+    benutzername = request.POST.get("benutzername", "")
+    passwort = request.POST.get("passwort", "")
+    port = int(request.POST.get("port", 22))
+
+    rpi_online = checkRPiOnline(hostname, port)
+    login_history = []
+
+    if rpi_online and benutzername and passwort:
+        login_history = readLoginHistory(hostname, port, benutzername, passwort)
+
     return render(request, 'trashApp/dashboard.html', {
-        'logbuch_eintraege': eintraege,
-        'fuellstaende': fuellstaende
+        "logbuch_eintraege": eintraege,
+        "fuellstaende": fuellstaende,
     })
+
 
 #S
 BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")
@@ -322,13 +465,101 @@ def eintragLoeschen(request):
 #S
 def admin_html(request):
     check = benutzer_ist_eingeloggt(request)
-    if check: return check
-    return render(request, 'trashApp/admin.html')
+    if check: 
+        return check
+
+    benutzer_liste = []
+    with open(XML_PATH, 'r', encoding='utf-8') as f:
+            tree = ET.parse(f)
+            root = tree.getroot()
+
+            for benutzer in root.findall('benutzer'):
+                benutzer_liste.append({
+                    'id': benutzer.get('id'),
+                    'benutzername': benutzer.findtext('benutzername'),
+                    'email': benutzer.findtext('email'),
+                    'rolle': benutzer.findtext('rolle'),
+                    'status': benutzer.findtext('status'),
+                })
+
+    return render(request, 'trashApp/admin.html', {'benutzer_liste': benutzer_liste,})
+
+#S
+def sperren_benutzer(request, benutzer_id):
+    login_check = benutzer_ist_eingeloggt(request)
+    if login_check:
+        return login_check
+
+    tree = xmlStrukturieren()
+    root = tree.getroot()
+
+    benutzer_element = root.find(f"benutzer[@id='{benutzer_id}']")
+    if benutzer_element is not None:
+        status_element = benutzer_element.find('status')
+        if status_element is None:
+            status_element = ET.SubElement(benutzer_element, 'status')
+        status_element.text = "gesperrt"
+
+        tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        return redirect('admin')
+
+    return HttpResponse("""
+        <script>
+            alert("Benutzer nicht gefunden.");
+            window.history.back();
+        </script>
+    """, status=400)
+
+#S
+def entsperren_benutzer(request, benutzer_id):
+    login_check = benutzer_ist_eingeloggt(request)
+    if login_check:
+        return login_check
+
+    tree = xmlStrukturieren()
+    root = tree.getroot()
+
+    benutzer_element = root.find(f"benutzer[@id='{benutzer_id}']")
+    if benutzer_element is not None:
+        status_element = benutzer_element.find('status')
+        if status_element is None:
+            status_element = ET.SubElement(benutzer_element, 'status')
+        status_element.text = "aktiv"
+
+        tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        return redirect('admin')
+
+    return HttpResponse("""
+        <script>
+            alert("Benutzer nicht gefunden.");
+            window.history.back();
+        </script>
+    """, status=400)
+
+#S
+def update_benutzer_status(benutzer_id, neuer_status):
+    tree = ET.parse(XML_PATH)
+    root = tree.getroot()
+
+    for benutzer in root.findall('benutzer'):
+        if benutzer.get('id') == str(benutzer_id):
+            status_el = benutzer.find('status')
+            if status_el is None:
+                status_el = ET.SubElement(benutzer, 'status')
+            status_el.text = neuer_status
+            break
+
+    tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+
+
+    return redirect('admin')
+
 
 #S
 def logout(request):
     request.session.flush()
     return redirect('login')
+
 
 #A
 def kontakt_email(request):
@@ -514,7 +745,7 @@ def eintragArtAendern(request):
             return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
 
         try:
-            tree.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True)
+            tree.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
         except Exception as e:
             return JsonResponse({"error": f"XML konnte nicht gespeichert werden: {e}"}, status=500)
 

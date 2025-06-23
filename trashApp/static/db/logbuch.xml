@@ -395,6 +395,69 @@
       <bild_url>/static/klassifikation/Max/20250603_161641_1 Plastik.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 12:5242</zeit>
+      <art>2 Restmüll</art>
+      <wahrscheinlichkeit>98</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_125242_2 Restmüll_98.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:1436</zeit>
+      <art>1 Plastik</art>
+      <wahrscheinlichkeit>64</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_131436_1 Plastik_64.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:1546</zeit>
+      <art>2 Restmüll</art>
+      <wahrscheinlichkeit>96</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_131546_2 Restmüll_96.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:1619</zeit>
+      <art>2 Restmüll</art>
+      <wahrscheinlichkeit>90</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_131619_2 Restmüll_90.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:2352</zeit>
+      <art>0 Papier</art>
+      <wahrscheinlichkeit>63</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_132352_0 Papier_63.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:2406</zeit>
+      <art>Restmüll</art>
+      <wahrscheinlichkeit>66</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_132406_0 Papier_Restmüll.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:2412</zeit>
+      <art>0 Papier</art>
+      <wahrscheinlichkeit>61</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_132412_0 Papier_61.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:2423</zeit>
+      <art>0 Papier</art>
+      <wahrscheinlichkeit>93</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_132423_0 Papier_93.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.23 13:2508</zeit>
+      <art>2 Restmüll</art>
+      <wahrscheinlichkeit>97</wahrscheinlichkeit>
+      <bild_url>/static/klassifikation/Max/20250623_132508_2 Restmüll_97.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
   </benutzer>
   <benutzer benutzer_id="fe5ba143-fb94-463d-842e-3d3198738461">
     <eintrag>

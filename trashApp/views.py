@@ -671,7 +671,7 @@ def email_senden(emails, betreff, inhalt):
 UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-
+#A
 @csrf_exempt
 def api_upload(request):
     if request.method == "POST":
@@ -695,7 +695,21 @@ def api_upload(request):
         speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", benutzername)
         os.makedirs(speicherpfad, exist_ok=True)
 
-        dateiname = f"{datum.replace('-', '')}_{uhrzeit.replace(':', '')}_{label}.jpg"
+        original_name = bild.name
+        if "_" in original_name:
+            name_ohne_ext = os.path.splitext(original_name)[0]
+            teile = name_ohne_ext.split("_")
+            if len(teile) >= 4:
+                datum = teile[0]
+                uhrzeit = teile[1]
+                label = teile[2]
+                wahrscheinlichkeit = teile[3]
+            else:
+                wahrscheinlichkeit = "0"
+        else:
+            wahrscheinlichkeit = "0"
+
+        dateiname = f"{datum}_{uhrzeit}_{label}_{wahrscheinlichkeit}.jpg"
         zielpfad = os.path.join(speicherpfad, dateiname)
 
         with open(zielpfad, "wb") as datei:
@@ -709,8 +723,9 @@ def api_upload(request):
 
         url = f"/static/klassifikation/{benutzername}/{dateiname}"
         eintrag = ET.SubElement(benutzer_log, "eintrag")
-        ET.SubElement(eintrag, "zeit").text = f"{datum.replace('-', '.')} {uhrzeit}"
+        ET.SubElement(eintrag, "zeit").text = f"{datum[:4]}.{datum[4:6]}.{datum[6:]} {uhrzeit[:2]}:{uhrzeit[2:]}"
         ET.SubElement(eintrag, "art").text = label
+        ET.SubElement(eintrag, "wahrscheinlichkeit").text = wahrscheinlichkeit
         ET.SubElement(eintrag, "bild_url").text = url
         ET.SubElement(eintrag, "benutzername").text = benutzername
 
@@ -719,6 +734,7 @@ def api_upload(request):
         return JsonResponse({"status": "erfolgreich", "filename": dateiname})
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
 
 #S
 BILDER_ORDNER_REL_XML = '/static/klassifikation'  # Pfad im XML (für Bild-URLs)

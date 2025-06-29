@@ -1,90 +1,94 @@
-from RPi import GPIO
+import lgpio
 from time import sleep
 import random
 
-GPIO.cleanup()
-
-GPIO.setmode(GPIO.BCM)
-
-in1 = 6 #4 Pins für den Motor; Strom kommt seperat an den Controller des Motors
+# GPIO-Pins (BCM) Zuordnung kann hier angepasst werden, für zwei Motoren können weitere 4 Pins genutzt werden mit demselben code
+in1 = 6
 in2 = 13
 in3 = 19
 in4 = 26
 
-time = 0.002 #Geschwindigkeit des Motors; geringerer Wert = schneller
+time = 0.002  # Geschwindigkeit des Motors
 
-GPIO.setup(in1, GPIO.OUT) #Pin Setup für Motor
-GPIO.setup(in2, GPIO.OUT)
-GPIO.setup(in3, GPIO.OUT)
-GPIO.setup(in4, GPIO.OUT)
+h = lgpio.gpiochip_open(0) # GPIO wird initiiert mit dem "handler" namens h in diesem Fall (Referenz für diesen GPIO Anschluss)
 
-GPIO.output(in1, False) #Ich glaube False und True ist Low und High
-GPIO.output(in2, False)
-GPIO.output(in3, False)
-GPIO.output(in4, False)
+# pins werden hier gesetzt
+for pin in [in1, in2, in3, in4]:
+    lgpio.gpio_claim_output(h, pin, 0) # hier wird jeder Pin aus der obigen Liste initiiert, mit einem Startwert von 0 (LOW)
 
-def Step1():					# Der Schrittmotor hat 8 Schritte die er nacheinander durchführt
-	GPIO.output(in4, True)		# Die Schritte müssen in der richtigen Reihenfolge ausgeführt werden
-	sleep(time)					# Sonst überspringt der Motor alle Schritte bis er dort ist wo er 
-	GPIO.output(in4, False)		# den letzten Schritt nicht machen konnte, also immer von 1 zu 8 oder 8 zu 1 (1, 2, 3,...)
-	
+def set_pin(pin, state):
+    lgpio.gpio_write(h, pin, int(state))
+    
+# Hier wird bei jedem Schritt dafür gesorgt, dass der Rotor sich weiter dreht. Wird ein Schritt ausgelassen, überspringt er die folgenden 7. Der Motor sollte nicht überlastet werden!
+
+def Step1():
+    set_pin(in4, True)
+    sleep(time)
+    set_pin(in4, False)
+
 def Step2():
-	GPIO.output(in4, True)
-	GPIO.output(in4, True)
-	sleep(time)
-	GPIO.output(in4, False)
-	GPIO.output(in4, False)
-	
+    set_pin(in4, True)
+    set_pin(in3, True)
+    sleep(time)
+    set_pin(in4, False)
+    set_pin(in3, False)
+
 def Step3():
-	GPIO.output(in3, True)
-	sleep(time)
-	GPIO.output(in3, False)
-	
+    set_pin(in3, True)
+    sleep(time)
+    set_pin(in3, False)
+
 def Step4():
-	GPIO.output(in2, True)
-	GPIO.output(in3, True)
-	sleep(time)
-	GPIO.output(in2, False)
-	GPIO.output(in3, False)
-	
+    set_pin(in2, True)
+    set_pin(in3, True)
+    sleep(time)
+    set_pin(in2, False)
+    set_pin(in3, False)
+
 def Step5():
-	GPIO.output(in2, True)
-	sleep(time)
-	GPIO.output(in2, False)
-	
+    set_pin(in2, True)
+    sleep(time)
+    set_pin(in2, False)
+
 def Step6():
-	GPIO.output(in1, True)
-	GPIO.output(in2, True)
-	sleep(time)
-	GPIO.output(in1, False)
-	GPIO.output(in2, False)
-	
+    set_pin(in1, True)
+    set_pin(in2, True)
+    sleep(time)
+    set_pin(in1, False)
+    set_pin(in2, False)
+
 def Step7():
-	GPIO.output(in1, True)
-	sleep(time)
-	GPIO.output(in1, False)
-	
+    set_pin(in1, True)
+    sleep(time)
+    set_pin(in1, False)
+
 def Step8():
-	GPIO.output(in4, True)
-	GPIO.output(in1, True)
-	sleep(time)
-	GPIO.output(in4, False)
-	GPIO.output(in1, False)
+    set_pin(in4, True)
+    set_pin(in1, True)
+    sleep(time)
+    set_pin(in4, False)
+    set_pin(in1, False)
+
+# Hier werden die 8 Steps nacheinander ausgeführt, so oft wie der Input es sagt. Dieser müsste automatisch weitergegeben werden, am besten drehen wir die Scheibe nachdem der Müll im jeweiligen Fach ist wieder auf eine Standardposition, das vereinfacht den Code, dauert aber länger
 
 def left(step):
-	for i in range(step):
-		Step1()
-		Step2()
-		Step3()
-		Step4()
-		Step5()
-		Step6()
-		Step7()
-		Step8()
-		print("Step LEFT: "), i
-		
-if random.randint(0, 1) >= 1:		# Was das genau macht weiß ich auch nicht...
-	left(random.randint(100, 1024))
+    for i in range(step):
+        Step1()
+        Step2()
+        Step3()
+        Step4()
+        Step5()
+        Step6()
+        Step7()
+        Step8()
+        print(f"Step LEFT: {i}")
 
-	GPIO.cleanup()
-	print("restart")
+# Hier wird die Anzahl an Drehungen ausgesucht, 130 entsprechen ziemlich genau 90 Grad
+
+while True:
+	print("Folgendes bitte nur als Zahl")
+	schritte = int(input("Geben Sie ein, wie viele Steps nach LINKS gemacht werden sollen: "))
+
+	left(schritte)
+
+lgpio.gpiochip_close(h)

@@ -3,77 +3,41 @@
   <benutzer benutzer_id="4442375f-806a-490f-90af-83898ffa4d7a">
     <eintrag>
       <zeit>26.05.2025 14:40:16</zeit>
-      <art>Papier</art>
+      <art>Restmüll</art>
       <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_144016_Papier.jpg</bild_url>
+      <bild_url>/static/klassifikation/20250526_144016_Restmüll.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 10:36:03</zeit>
-      <art>1 Plastik</art>
+      <art>Restmüll</art>
       <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_103603_Plastik.jpg</bild_url>
-    </eintrag>
-    <eintrag>
-      <zeit>Unbekannt Unbekannt</zeit>
-      <art>Unbekannt</art>
-      <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_Plastik.jpg</bild_url>
-    </eintrag>
-    <eintrag>
-      <zeit>Unbekannt Unbekannt</zeit>
-      <art>Unbekannt</art>
-      <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_Papier.jpg</bild_url>
-    </eintrag>
-    <eintrag>
-      <zeit>02.06.2025 13:28</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>02.06.2025 13:28</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_103603_Restmüll.jpg</bild_url>
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">
     <eintrag>
-      <zeit>26.05.2025 12:23:21</zeit>
-      <art>Papier</art>
-      <benutzername>Mustermann</benutzername>
-      <bild_url>/static/klassifikation/26.05.2025 12:23:21_Papier.jpg</bild_url>
-    </eintrag>
-    <eintrag>
       <zeit>26.05.2025 12:11:26</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_121126_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 12:11:19</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_121119_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 12:09:17</zeit>
-      <art>0 Papier</art>
+      <art>Papier</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_120917_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 10:42:12</zeit>
-      <art>1 Plastik</art>
+      <art>Plastik</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_104212_Plastik.jpg</bild_url>
-    </eintrag>
-    <eintrag>
-      <zeit>21.06.2025 22:25</zeit>
-      <art>Plastik</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>Mustermann</benutzername>
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">

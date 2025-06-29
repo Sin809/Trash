@@ -831,8 +831,6 @@ def api_upload(request):
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
-<<<<<<< HEAD
-=======
 
 #S
 BILDER_ORDNER_REL_XML = '/static/klassifikation'  # Pfad im XML (für Bild-URLs)
@@ -919,13 +917,12 @@ def eintragArtAendern(request):
         return redirect('/tr/dashboard')
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
->>>>>>> 9d6a30b4961f52733c0938b38b946cbccad89906
 
 
 
 
 
-
+"""
 
 BILDER_ORDNER = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", "Ben")
 
@@ -967,3 +964,4 @@ def aendere_art(request):
         return redirect('test')
 
     return redirect('test')
+"""

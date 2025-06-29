@@ -486,6 +486,36 @@
       <bild_url>/static/klassifikation/Max/20250623_150450_0 Papier_99.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
+    <eintrag>
+      <zeit>2025.06.25 11:43:56</zeit>
+      <art>1 Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250625_114356_1 Plastik_56.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.25 11:44:28</zeit>
+      <art>1 Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250625_114428_1 Plastik_78.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.25 11:46:36</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250625_114636_2 Restmüll_100.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.25 11:47:06</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250625_114706_2 Restmüll_99.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.25 11:47:11</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250625_114711_2 Restmüll_95.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
   </benutzer>
   <benutzer benutzer_id="fe5ba143-fb94-463d-842e-3d3198738461">
     <eintrag>

@@ -18,8 +18,6 @@ from django.http import JsonResponse
 from django.conf import settings
 
 
-XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
-
 #A
 class Benutzer:
     def __init__(self, benutzername, email, passwort, rolle='user', status='aktiv'):
@@ -39,19 +37,39 @@ class Benutzer:
         ET.SubElement(user, 'status').text = self.status
         return user
 
+#Allgemeine Pfade für die XMls
+benutzerXmlPfad = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
+logbuchXmlPfad = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
+
+
+#Hilfsfunktionen für die Verarbeitung der XML
 #S    
-def xmlStrukturieren():
+def xmlStrukturierenBenutzer():
     parser = ET.XMLParser(remove_blank_text=True)
-    return ET.parse(XML_PATH, parser)
+    return ET.parse(benutzerXmlPfad, parser)
+
+#S
+def xmlStrukturierenLogbuch():
+    parser = ET.XMLParser(remove_blank_text=True)
+    return ET.parse(logbuchXmlPfad, parser)
 
 #A    
 def lade_benutzer():
-    if not os.path.exists(XML_PATH):
+    if not os.path.exists(benutzerXmlPfad):
         return []
-    tree = xmlStrukturieren()
+    tree = xmlStrukturierenBenutzer()
     root = tree.getroot()
     return root.xpath('//benutzer')
 
+#Hilfsfunktion login checken
+#A
+def benutzer_ist_eingeloggt(request):
+    if not request.session.get('uuid'):
+        return redirect('login')
+    return None
+
+
+#Registrierung
 #A
 def registrieren_html(request):
     if request.method == 'POST':
@@ -68,11 +86,11 @@ def registrieren_html(request):
                             </script>
                             """)
 
-        if not os.path.exists(XML_PATH):
+        if not os.path.exists(benutzerXmlPfad):
             root = ET.Element('benutzerliste')
             tree = ET.ElementTree(root)
         else:
-            tree = xmlStrukturieren()
+            tree = xmlStrukturierenBenutzer()
             root = tree.getroot()
 
         if root.xpath(f"benutzer[benutzername='{benutzername}' or email='{email}']"):
@@ -85,24 +103,20 @@ def registrieren_html(request):
         
         neuer_benutzer = Benutzer(benutzername, email, passwort) #neue user klasse anlegen
         root.append(neuer_benutzer.als_xml_speichern())  #klasse als xml speichern
-        tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('login')
 
     return render(request, 'trashApp/registrieren.html')
 
-#A
-def benutzer_ist_eingeloggt(request):
-    if not request.session.get('uuid'):
-        return redirect('login')
-    return None
 
+#Login
 #A    
 def login_html(request):
     if request.method == 'POST':
         benutzername = request.POST['benutzername']
         passwort = request.POST['passwort']
 
-        if not os.path.exists(XML_PATH):
+        if not os.path.exists(benutzerXmlPfad):
             return HttpResponse("""
                             <script>
                                 alert("Keine Benutzer vorhanden");
@@ -110,7 +124,7 @@ def login_html(request):
                             </script>
                             """)
 
-        tree = xmlStrukturieren()
+        tree = xmlStrukturierenBenutzer()
         root = tree.getroot()
 
         benutzer = root.xpath(f"benutzer[benutzername='{benutzername}' and passwort='{passwort}']")
@@ -144,13 +158,15 @@ def login_html(request):
 
     return render(request, 'trashApp/login.html')
 
+
+#Profil
 #A
 def profil_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check: return check
 
     uuid_wert = request.session.get('uuid')
-    tree = xmlStrukturieren()
+    tree = xmlStrukturierenBenutzer()
     root = tree.getroot()
     benutzer_element = root.xpath(f"benutzer[@id='{uuid_wert}']")
 
@@ -178,7 +194,7 @@ def profil_bearbeiten(request):
 
     if request.method == 'POST':
         uuid_value = request.session.get('uuid')
-        tree = xmlStrukturieren()
+        tree = xmlStrukturierenBenutzer()
         root = tree.getroot()
         benutzer_element = root.xpath(f"benutzer[@id='{uuid_value}']")
 
@@ -195,9 +211,104 @@ def profil_bearbeiten(request):
         benutzer_element.find('email').text = request.POST['email']
         benutzer_element.find('passwort').text = request.POST['passwort']
 
-        tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
 
     return redirect('profil')
+
+#A
+def kontakt_email(request):
+    if request.method == 'POST':
+        betreff = request.POST.get('betreff')
+        nachricht = request.POST.get('nachricht')
+        empfaenger = ["chronoszeitbuchung@gmail.com"]
+        email_senden(empfaenger, betreff, nachricht)
+        return HttpResponse("""
+            <script>
+                alert("Nachricht wurde gesendet.");
+                window.location.href = document.referrer;
+            </script>
+        """)
+    return redirect('profil')
+
+#A
+def email_senden(emails, betreff, inhalt):
+    adresse = "chronoszeitbuchung@gmail.com"
+    passwort = "wmrh ayvh aprj vllx"
+
+    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+    server.login(adresse, passwort)
+
+    for email in emails:
+        msg = EmailMessage()
+        msg["From"] = adresse
+        msg["To"] = email
+        msg["Subject"] = betreff
+        msg.set_content(inhalt)
+        server.send_message(msg)
+    server.quit()
+# class EmailMessage(Message):
+#     def __init__(self):
+#         super().__init__()
+#         self._headers = []  # Liste der Header-Felder (z. B. "From", "To", "Subject")
+#         self._payload = None  # Der Inhalt der E-Mail
+#         self._charset = "utf-8"  # Standard-Zeichensatz für den Inhalt
+
+#     def set_content(self, content, subtype="plain", charset="utf-8"):
+#         self._payload = content  # Speichert den Inhalt der Nachricht
+#         self._charset = charset
+
+#     def __setitem__(self, key, value):
+#         self._headers.append((key, value))  # Fügt Header hinzu, z. B. "From", "To", "Subject"
+
+# chronoszeitbuchung@gmail.com
+# Name: Chronos
+# Nachname: Zeitbuchung
+# PW: ChronosDVM2023++
+# Wiederherstellung: schambach_andre@teams.hs-ludwigsburg.de
+# App: chronoszeitbuchung
+# App-Passwort: wmrh ayvh aprj vllx
+
+
+#System und PI-Überprüfung
+#S
+def system_html(request):
+    check = benutzer_ist_eingeloggt(request)
+    if check:
+        return check
+    
+    benutzer_id = request.session.get('uuid')
+
+    if not benutzer_id or not ist_admin(str(benutzer_id)):
+        return HttpResponse("""
+            <script>
+                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
+                window.history.back();
+            </script>
+        """)
+    
+    hostname = request.POST.get("hostname", "")
+    benutzername = request.POST.get("benutzername", "")
+    passwort = request.POST.get("passwort", "")
+    port = int(request.POST.get("port", 22))
+
+    rpi_online = checkRPiOnline(hostname, port)
+    login_history = []
+
+    if rpi_online and benutzername and passwort:
+        login_history = readLoginHistory(hostname, port, benutzername, passwort)
+        system_resources = get_system_resources(hostname, port, benutzername, passwort)
+    else:
+        system_resources = {}
+
+    return render(request, 'trashApp/system.html', {
+        "rpi_online": rpi_online,
+        "login_history": login_history,
+        "hostname": hostname,
+        "port": port,
+        "passwort": passwort,
+        "benutzername": benutzername,
+        "system_resources": system_resources,
+    })
 
 #S
 def checkRPiOnline(hostname, port=22, timeout=1):
@@ -285,47 +396,9 @@ def get_system_resources(host, port, user, password):
         return {"error": str(e)}
 
     return results
-    
-#S
-def system_html(request):
-    check = benutzer_ist_eingeloggt(request)
-    if check:
-        return check
-    
-    benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
-        return HttpResponse("""
-            <script>
-                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
-                window.history.back();
-            </script>
-        """)
-    
-    hostname = request.POST.get("hostname", "")
-    benutzername = request.POST.get("benutzername", "")
-    passwort = request.POST.get("passwort", "")
-    port = int(request.POST.get("port", 22))
 
-    rpi_online = checkRPiOnline(hostname, port)
-    login_history = []
-
-    if rpi_online and benutzername and passwort:
-        login_history = readLoginHistory(hostname, port, benutzername, passwort)
-        system_resources = get_system_resources(hostname, port, benutzername, passwort)
-    else:
-        system_resources = {}
-
-    return render(request, 'trashApp/system.html', {
-        "rpi_online": rpi_online,
-        "login_history": login_history,
-        "hostname": hostname,
-        "port": port,
-        "passwort": passwort,
-        "benutzername": benutzername,
-        "system_resources": system_resources,
-    })
-
+#Dashboard
 #S
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
@@ -336,7 +409,7 @@ def dashboard_html(request):
     eintraege = []
     zaehler = {'Papier': 0, 'Plastik': 0, 'Restmüll': 0, 'Uneindeutig': 0}
 
-    if os.path.exists(LOGBUCH_XML_PATH):
+    if os.path.exists(logbuchXmlPfad):
         tree = xmlStrukturierenLogbuch()
         root = tree.getroot()
 
@@ -367,16 +440,9 @@ def dashboard_html(request):
         "rpi_online": rpi_online,
     })
 
-
-#S
-BENUTZER_XML_PATH = os.path.join(settings.BASE_DIR, "trashApp", "static", "db", "benutzer.xml")
-def xmlStrukturierenBenutzer():
-    parser = ET.XMLParser(remove_blank_text=True)
-    return ET.parse(BENUTZER_XML_PATH, parser)
-
 #S
 def finde_benutzername(uuid):
-    if not os.path.exists(BENUTZER_XML_PATH):
+    if not os.path.exists(benutzerXmlPfad):
         return None
     tree = xmlStrukturierenBenutzer()
     root = tree.getroot()
@@ -385,12 +451,6 @@ def finde_benutzername(uuid):
         return benutzer.findtext('benutzername')
     return None
 
-LOGBUCH_XML_PATH = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
-
-def xmlStrukturierenLogbuch():
-    parser = ET.XMLParser(remove_blank_text=True)
-    return ET.parse(LOGBUCH_XML_PATH, parser)
-
 #S
 def logbuchEintragHtml(request):
     if request.method == 'POST':
@@ -398,7 +458,7 @@ def logbuchEintragHtml(request):
         uuid_value = request.session.get('uuid')
         benutzername = finde_benutzername(uuid_value)
 
-        if not os.path.exists(LOGBUCH_XML_PATH):
+        if not os.path.exists(logbuchXmlPfad):
             root = ET.Element('logbuch')
             tree = ET.ElementTree(root)
         else:
@@ -416,7 +476,7 @@ def logbuchEintragHtml(request):
         ET.SubElement(eintrag, 'bild_url').text = "Kein Bild gemacht"
         ET.SubElement(eintrag, 'benutzername').text = benutzername
 
-        tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        tree.write(logbuchXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('dashboard')
 
     return redirect('dashboard')
@@ -427,7 +487,6 @@ Art muss von 0 Plastik auf nur Plastik geändert werden
 Ändern-splate damit mit nem tabelle button art ändern und die datei auch umbenannt wird
 """
 
-
 #S
 def eintragLoeschen(request):
     if request.method == 'POST':
@@ -436,7 +495,7 @@ def eintragLoeschen(request):
             print("Kein zu löschender Zeitstempel übergeben")
             return redirect('dashboard')
 
-        if os.path.exists(LOGBUCH_XML_PATH):
+        if os.path.exists(logbuchXmlPfad):
             tree = xmlStrukturierenLogbuch()
             root = tree.getroot()
 
@@ -454,7 +513,7 @@ def eintragLoeschen(request):
                 print(f"Prüfe Eintrag mit Zeit: {zeit_text}")
                 if zeit_text == logbucheintragloeschen.strip():
                     benutzer_element.remove(eintrag)
-                    tree.write(LOGBUCH_XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+                    tree.write(logbuchXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
                     print("Eintrag gelöscht!")
                     gefunden = True
                     break
@@ -466,20 +525,8 @@ def eintragLoeschen(request):
 
     return redirect('dashboard')
 
-#S
-def ist_admin(benutzer_id):
-    try:
-        tree = ET.parse(XML_PATH)
-        root = tree.getroot()
 
-        for benutzer in root.findall('benutzer'):
-            if benutzer.get('id') == benutzer_id:
-                return benutzer.findtext('rolle') == 'admin'
-    except:
-        return False
-
-    return False
-
+#Admin
 #S
 def admin_html(request):
     benutzer_id = request.session.get('uuid')
@@ -494,7 +541,7 @@ def admin_html(request):
 
     # Benutzerdaten laden
     benutzer_liste = []
-    with open(XML_PATH, 'r', encoding='utf-8') as f:
+    with open(benutzerXmlPfad, 'r', encoding='utf-8') as f:
         tree = ET.parse(f)
         root = tree.getroot()
 
@@ -509,10 +556,23 @@ def admin_html(request):
 
     return render(request, 'trashApp/admin.html', {'benutzer_liste': benutzer_liste})
 
+#S
+def ist_admin(benutzer_id):
+    try:
+        tree = ET.parse(benutzerXmlPfad)
+        root = tree.getroot()
+
+        for benutzer in root.findall('benutzer'):
+            if benutzer.get('id') == benutzer_id:
+                return benutzer.findtext('rolle') == 'admin'
+    except:
+        return False
+
+    return False
 
 #S
 def rolle_hochsetzen(request, benutzer_id):
-    tree = ET.parse(XML_PATH)
+    tree = ET.parse(benutzerXmlPfad)
     root = tree.getroot()
 
     for benutzer in root.findall('benutzer'):
@@ -520,13 +580,13 @@ def rolle_hochsetzen(request, benutzer_id):
             rolle_element = benutzer.find('rolle')
             if rolle_element is not None:
                 rolle_element.text = 'admin'
-                tree.write(XML_PATH, encoding='utf-8', xml_declaration=True)
+                tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True)
                 break
     return redirect('admin')
 
 #S
 def rolle_runtersetzen(request, benutzer_id):
-    tree = ET.parse(XML_PATH)
+    tree = ET.parse(benutzerXmlPfad)
     root = tree.getroot()
 
     for benutzer in root.findall('benutzer'):
@@ -534,7 +594,7 @@ def rolle_runtersetzen(request, benutzer_id):
             rolle_element = benutzer.find('rolle')
             if rolle_element is not None:
                 rolle_element.text = 'user'
-                tree.write(XML_PATH, encoding='utf-8', xml_declaration=True)
+                tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True)
                 break
     return redirect('admin')
 
@@ -544,7 +604,7 @@ def sperren_benutzer(request, benutzer_id):
     if login_check:
         return login_check
 
-    tree = xmlStrukturieren()
+    tree = xmlStrukturierenBenutzer()
     root = tree.getroot()
 
     benutzer_element = root.find(f"benutzer[@id='{benutzer_id}']")
@@ -554,7 +614,7 @@ def sperren_benutzer(request, benutzer_id):
             status_element = ET.SubElement(benutzer_element, 'status')
         status_element.text = "gesperrt"
 
-        tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('admin')
 
     return HttpResponse("""
@@ -570,7 +630,7 @@ def entsperren_benutzer(request, benutzer_id):
     if login_check:
         return login_check
 
-    tree = xmlStrukturieren()
+    tree = xmlStrukturierenBenutzer()
     root = tree.getroot()
 
     benutzer_element = root.find(f"benutzer[@id='{benutzer_id}']")
@@ -580,7 +640,7 @@ def entsperren_benutzer(request, benutzer_id):
             status_element = ET.SubElement(benutzer_element, 'status')
         status_element.text = "aktiv"
 
-        tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
         return redirect('admin')
 
     return HttpResponse("""
@@ -592,7 +652,7 @@ def entsperren_benutzer(request, benutzer_id):
 
 #S
 def update_benutzer_status(benutzer_id, neuer_status):
-    tree = ET.parse(XML_PATH)
+    tree = ET.parse(benutzerXmlPfad)
     root = tree.getroot()
 
     for benutzer in root.findall('benutzer'):
@@ -603,71 +663,19 @@ def update_benutzer_status(benutzer_id, neuer_status):
             status_el.text = neuer_status
             break
 
-    tree.write(XML_PATH, encoding='utf-8', xml_declaration=True, pretty_print=True)
-
+    tree.write(benutzerXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
 
     return redirect('admin')
 
 
+#Logout
 #S
 def logout(request):
     request.session.flush()
     return redirect('login')
 
 
-#A
-def kontakt_email(request):
-    if request.method == 'POST':
-        betreff = request.POST.get('betreff')
-        nachricht = request.POST.get('nachricht')
-        empfaenger = ["chronoszeitbuchung@gmail.com"]
-        email_senden(empfaenger, betreff, nachricht)
-        return HttpResponse("""
-            <script>
-                alert("Nachricht wurde gesendet.");
-                window.location.href = document.referrer;
-            </script>
-        """)
-    return redirect('profil')
-
-#A
-def email_senden(emails, betreff, inhalt):
-    adresse = "chronoszeitbuchung@gmail.com"
-    passwort = "wmrh ayvh aprj vllx"
-
-    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-    server.login(adresse, passwort)
-
-    for email in emails:
-        msg = EmailMessage()
-        msg["From"] = adresse
-        msg["To"] = email
-        msg["Subject"] = betreff
-        msg.set_content(inhalt)
-        server.send_message(msg)
-    server.quit()
-# class EmailMessage(Message):
-#     def __init__(self):
-#         super().__init__()
-#         self._headers = []  # Liste der Header-Felder (z. B. "From", "To", "Subject")
-#         self._payload = None  # Der Inhalt der E-Mail
-#         self._charset = "utf-8"  # Standard-Zeichensatz für den Inhalt
-
-#     def set_content(self, content, subtype="plain", charset="utf-8"):
-#         self._payload = content  # Speichert den Inhalt der Nachricht
-#         self._charset = charset
-
-#     def __setitem__(self, key, value):
-#         self._headers.append((key, value))  # Fügt Header hinzu, z. B. "From", "To", "Subject"
-
-# chronoszeitbuchung@gmail.com
-# Name: Chronos
-# Nachname: Zeitbuchung
-# PW: ChronosDVM2023++
-# Wiederherstellung: schambach_andre@teams.hs-ludwigsburg.de
-# App: chronoszeitbuchung
-# App-Passwort: wmrh ayvh aprj vllx
-
+#Bilder vom Pi hochladen/bearbeiten
 #A
 UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -715,7 +723,7 @@ def api_upload(request):
         with open(zielpfad, "wb") as datei:
             datei.write(bild.read())
 
-        logbuch_baum = xmlStrukturierenLogbuch() if os.path.exists(LOGBUCH_XML_PATH) else ET.ElementTree(ET.Element("logbuch"))
+        logbuch_baum = xmlStrukturierenLogbuch() if os.path.exists(logbuchXmlPfad) else ET.ElementTree(ET.Element("logbuch"))
         logbuch_root = logbuch_baum.getroot()
         benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")
         if benutzer_log is None:
@@ -728,12 +736,11 @@ def api_upload(request):
         ET.SubElement(eintrag, "bild_url").text = url
         ET.SubElement(eintrag, "benutzername").text = benutzername
 
-        logbuch_baum.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+        logbuch_baum.write(logbuchXmlPfad, encoding="utf-8", xml_declaration=True, pretty_print=True)
 
         return JsonResponse({"status": "erfolgreich", "filename": dateiname})
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
-
 
 
 #S
@@ -757,7 +764,7 @@ def eintragArtAendern(request):
             return JsonResponse({"error": "Fehlende Daten"}, status=400)
 
         try:
-            tree = ET.parse(LOGBUCH_XML_PATH)
+            tree = ET.parse(logbuchXmlPfad)
             root = tree.getroot()
         except Exception as e:
             return JsonResponse({"error": f"XML konnte nicht geladen werden: {e}"}, status=500)
@@ -814,7 +821,7 @@ def eintragArtAendern(request):
             return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
 
         try:
-            tree.write(LOGBUCH_XML_PATH, encoding="utf-8", xml_declaration=True, pretty_print=True)
+            tree.write(logbuchXmlPfad, encoding="utf-8", xml_declaration=True, pretty_print=True)
         except Exception as e:
             return JsonResponse({"error": f"XML konnte nicht gespeichert werden: {e}"}, status=500)
 
@@ -827,9 +834,7 @@ def eintragArtAendern(request):
 
 
 
-
-
-
+"""
 BILDER_ORDNER = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", "Ben")
 
 def test_view(request):
@@ -869,3 +874,4 @@ def aendere_art(request):
         return redirect('test')
 
     return redirect('test')
+"""

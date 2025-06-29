@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from datetime import datetime
 import socket
 import paramiko
+import json
 
 #A noch unklar
 from django.core.files.storage import default_storage
@@ -776,37 +777,36 @@ def api_upload(request):
         label = request.POST.get("label", "Unbekannt")
         datum = request.POST.get("datum")
         uhrzeit = request.POST.get("uhrzeit")
-        uuid_value = request.POST.get("uuid")
+        wahrscheinlichkeit = request.POST.get("wahrscheinlichkeit", "0")
+        pi_id = request.POST.get("pi_id")
 
-        if not all([bild, datum, uhrzeit, uuid_value]):
+        if not all([bild, datum, uhrzeit, pi_id]):
             return JsonResponse({"error": "Fehlende Felder"}, status=400)
+
+    
+        pi_benutzer = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'pi_user.json')
+        if not os.path.exists(pi_benutzer):
+            return JsonResponse({"error": "Keine Pi-Zuordnungsdatei gefunden"}, status=500)
+
+        with open(pi_benutzer, "r") as f:
+            pi_mapping = json.load(f)
+
+        uuid_value = pi_mapping.get(pi_id)
+        if not uuid_value:
+            return JsonResponse({"error": "Unbekannte Pi-ID"}, status=403)
 
         benutzer_baum = xmlStrukturierenBenutzer()
         benutzer_root = benutzer_baum.getroot()
         benutzer_element = benutzer_root.find(f"benutzer[@id='{uuid_value}']")
         if benutzer_element is None:
-            return JsonResponse({"error": "Ungültige UUID"}, status=403)
+            return JsonResponse({"error": "Ungültige Benutzer-UUID"}, status=403)
 
         benutzername = benutzer_element.findtext("benutzername")
 
         speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", benutzername)
         os.makedirs(speicherpfad, exist_ok=True)
 
-        original_name = bild.name
-        if "_" in original_name:
-            name_ohne_ext = os.path.splitext(original_name)[0]
-            teile = name_ohne_ext.split("_")
-            if len(teile) >= 4:
-                datum = teile[0]
-                uhrzeit = teile[1]
-                label = teile[2]
-                wahrscheinlichkeit = teile[3]
-            else:
-                wahrscheinlichkeit = "0"
-        else:
-            wahrscheinlichkeit = "0"
-
-        dateiname = f"{datum}_{uhrzeit}_{label}_{wahrscheinlichkeit}.jpg"
+        dateiname = f"{datum.replace('-', '')}_{uhrzeit.replace(':', '')}_{label}_{wahrscheinlichkeit}.jpg"
         zielpfad = os.path.join(speicherpfad, dateiname)
 
         with open(zielpfad, "wb") as datei:
@@ -820,9 +820,8 @@ def api_upload(request):
 
         url = f"/static/klassifikation/{benutzername}/{dateiname}"
         eintrag = ET.SubElement(benutzer_log, "eintrag")
-        ET.SubElement(eintrag, "zeit").text = f"{datum[:4]}.{datum[4:6]}.{datum[6:]} {uhrzeit[:2]}:{uhrzeit[2:]}"
+        ET.SubElement(eintrag, "zeit").text = f"{datum.replace('-', '.')} {uhrzeit}"
         ET.SubElement(eintrag, "art").text = label
-        ET.SubElement(eintrag, "wahrscheinlichkeit").text = wahrscheinlichkeit
         ET.SubElement(eintrag, "bild_url").text = url
         ET.SubElement(eintrag, "benutzername").text = benutzername
 
@@ -832,6 +831,95 @@ def api_upload(request):
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
+<<<<<<< HEAD
+=======
+
+#S
+BILDER_ORDNER_REL_XML = '/static/klassifikation'  # Pfad im XML (für Bild-URLs)
+BILDER_ORDNER_ABS = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'klassifikation')  # absoluter Pfad auf Disk
+
+def finde_datei_rekursiv(start_ordner, dateiname):
+    for root, dirs, files in os.walk(start_ordner):
+        if dateiname in files:
+            return os.path.join(root, dateiname)
+    return None
+
+@csrf_exempt
+def eintragArtAendern(request):
+    if request.method == "POST":
+        uuid_value = request.POST.get("uuid")
+        alte_zeit = request.POST.get("zeit")
+        neue_art = request.POST.get("neue_art")
+
+        if not all([uuid_value, alte_zeit, neue_art]):
+            return JsonResponse({"error": "Fehlende Daten"}, status=400)
+
+        try:
+            tree = ET.parse(logbuchXmlPfad)
+            root = tree.getroot()
+        except Exception as e:
+            return JsonResponse({"error": f"XML konnte nicht geladen werden: {e}"}, status=500)
+
+        benutzer = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        if benutzer is None:
+            return JsonResponse({"error": "Benutzer nicht gefunden"}, status=404)
+
+        gefunden = False
+        for eintrag in benutzer.findall("eintrag"):
+            if eintrag.findtext("zeit") == alte_zeit:
+                eintrag.find("art").text = neue_art
+
+                bild_url = eintrag.findtext("bild_url")
+                if bild_url:
+                    alter_dateiname = os.path.basename(bild_url)
+
+                    # Dateiname anpassen
+                    name, ext = os.path.splitext(alter_dateiname)
+                    teile = name.split('_')
+                    if len(teile) >= 3:
+                        teile[-1] = neue_art
+                        neuer_dateiname = "_".join(teile) + ext
+                    else:
+                        neuer_dateiname = f"{alte_zeit}_{neue_art}{ext}"
+
+                    # Rekursive Suche nach der Datei
+                    alter_pfad = finde_datei_rekursiv(BILDER_ORDNER_ABS, alter_dateiname)
+                    if not alter_pfad:
+                        return JsonResponse({"error": "Bilddatei nicht gefunden"}, status=404)
+
+                    ordner_von_alter_pfad = os.path.dirname(alter_pfad)
+                    neuer_pfad = os.path.join(ordner_von_alter_pfad, neuer_dateiname)
+
+                    try:
+                        os.rename(alter_pfad, neuer_pfad)
+
+                        # Relativer Pfad im XML (inklusive Unterordner)
+                        rel_ordner = os.path.relpath(ordner_von_alter_pfad, BILDER_ORDNER_ABS).replace(os.sep, '/')
+                        if rel_ordner == '.':
+                            rel_ordner = ''  # direkt im Hauptordner
+                        else:
+                            rel_ordner = '/' + rel_ordner
+
+                        neuer_rel_pfad = f"{BILDER_ORDNER_REL_XML}{rel_ordner}/{neuer_dateiname}"
+                        eintrag.find("bild_url").text = neuer_rel_pfad
+                    except Exception as e:
+                        return JsonResponse({"error": f"Fehler beim Umbenennen der Bilddatei: {e}"}, status=500)
+
+                gefunden = True
+                break
+
+        if not gefunden:
+            return JsonResponse({"error": "Eintrag nicht gefunden"}, status=404)
+
+        try:
+            tree.write(logbuchXmlPfad, encoding="utf-8", xml_declaration=True, pretty_print=True)
+        except Exception as e:
+            return JsonResponse({"error": f"XML konnte nicht gespeichert werden: {e}"}, status=500)
+
+        return redirect('/tr/dashboard')
+
+    return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+>>>>>>> 9d6a30b4961f52733c0938b38b946cbccad89906
 
 
 

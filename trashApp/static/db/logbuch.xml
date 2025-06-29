@@ -2,76 +2,10 @@
 <logbuch>
   <benutzer benutzer_id="4442375f-806a-490f-90af-83898ffa4d7a">
     <eintrag>
-      <zeit>26.05.2025 15:15</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:17</zeit>
-      <art>Uneindeutig</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:22</zeit>
-      <art>Plastik</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:23</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>26.05.2025 15:23</zeit>
-      <art>Papier</art>
-      <bild_url>Kein Bild gemacht</bild_url>
-      <benutzername>sin</benutzername>
-    </eintrag>
-    <eintrag>
       <zeit>26.05.2025 14:40:16</zeit>
       <art>Papier</art>
       <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_144016_0 Papier.jpg</bild_url>
+      <bild_url>/static/klassifikation/20250526_144016_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:10:26</zeit>
@@ -81,9 +15,9 @@
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 14:07:41</zeit>
-      <art>Plastik</art>
+      <art>Papier</art>
       <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_140741_0 Papier.jpg</bild_url>
+      <bild_url>/static/klassifikation/20250526_140741_Papier.jpg</bild_url>
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 13:53:57</zeit>
@@ -190,6 +124,24 @@
     <eintrag>
       <zeit>22.06.2025 13:40</zeit>
       <art>Uneindeutig</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>sin</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>29.06.2025 14:33</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>sin</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>29.06.2025 14:33</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>sin</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>29.06.2025 14:49</zeit>
+      <art>Papier</art>
       <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>sin</benutzername>
     </eintrag>

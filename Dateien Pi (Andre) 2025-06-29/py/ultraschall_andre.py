@@ -1,8 +1,8 @@
 import lgpio
 import time
 
-TRIG = 23
-ECHO = 24
+TRIG = 22
+ECHO = 27
 TANK_HOEHE_CM = 50.0  # Anpassen
 
 h = lgpio.gpiochip_open(0)

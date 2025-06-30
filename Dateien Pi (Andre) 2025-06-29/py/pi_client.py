@@ -32,7 +32,7 @@ with open(LABELS_PFAD, "r") as f:
 # Pins
 ROT_PIN = 17
 BLAU_PIN = 18
-TASTER_PIN = 12
+TASTER_PIN = 25
 
 h = lgpio.gpiochip_open(0)
 lgpio.gpio_claim_output(h, ROT_PIN)

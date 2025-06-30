@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Flyer</title>
+    <link rel="stylesheet" type="text/css" 
+        href="{% static 'css/trash.css' %}"/>
+        <script type="text/javascript" src="{% static 'scripts/script.js' %}"></script>
+
+</head>
+<body>
+    <div class="gesamtbereichclass">
+        
+        <div class="standardDivclass zentriert">
+            <h2 class="hauptUeberschriftenclass">Flyer Download (Deutsch)</h2>
+            <p>Hier können Sie den Flyer auf Deutsch herunterladen:</p>
+            <a href="{% static 'pdf/flyer-deutsch.pdf' %}" class="linkButton" download>Flyer Deutsch</a>
+        </div>
+
+        <div class="standardDivclass zentriert">
+            <h2 class="hauptUeberschriftenclass">Flyer Download (English)</h2>
+            <p>Here you can download the flyer in English:</p>
+            <a href="{% static 'pdf/flyer-english.pdf' %}" class="linkButton" download>Flyer English</a>
+        </div>
+
+    {% include "trashApp/banner.html" %}
+</body>
+</html>
+

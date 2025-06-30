@@ -876,3 +876,9 @@ def aendere_art(request):
 
     return redirect('test')
 """
+
+
+#Flyer
+#S
+def flyer_html(request):
+    return render(request, 'trashApp/flyer.html')

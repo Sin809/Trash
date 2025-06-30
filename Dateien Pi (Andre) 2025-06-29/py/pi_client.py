@@ -61,6 +61,12 @@ def klassifizieren(pfad):
 
     return label, wahrscheinlichkeit
 
+#Möglicher Code um Fließband über motor_fliessband.py zu steuern
+#from motor_fliessband import fliessband_drehen
+#fliessband_drehen(130)
+#from motor_fliessband import cleanup
+#cleanup()
+
 def sende_bild(pfad, bildname, label, datum, uhrzeit, wahrscheinlichkeit):
     try:
         with open(pfad, "rb") as datei:

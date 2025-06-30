@@ -9,9 +9,16 @@
     </eintrag>
     <eintrag>
       <zeit>26.05.2025 10:36:03</zeit>
-      <art>Restmüll</art>
+      <art>Plastik</art>
       <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_103603_Restmüll.jpg</bild_url>
+      <bild_url>/static/klassifikation/20250526_103603_Plastik.jpg</bild_url>
+    </eintrag>
+    <reset papier="30.06.2025 17:00:39" plastik="30.06.2025 16:57:09"/>
+    <eintrag>
+      <zeit>30.06.2025 17:04</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>sin</benutzername>
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">

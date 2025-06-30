@@ -46,6 +46,13 @@
                                     </div>
                                 </div>
                             </td>
+                            <td>
+                                <form method="post" action="{% url 'reset_fuellstand' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="art" value="Papier">
+                                    <button type="submit">Zurücksetzen</button>
+                                </form>
+                            </td>
                         </tr>
                         <tr>
                             <td>Plastik</td>
@@ -57,6 +64,13 @@
                                         style="width: {{ fuellstaende.plastik }}%;">
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'reset_fuellstand' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="art" value="Plastik">
+                                    <button type="submit">Zurücksetzen</button>
+                                </form>
                             </td>
                         </tr>
                         <tr>
@@ -70,6 +84,13 @@
                                     </div>
                                 </div>
                             </td>
+                            <td>
+                                <form method="post" action="{% url 'reset_fuellstand' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="art" value="Restmüll">
+                                    <button type="submit">Zurücksetzen</button>
+                                </form>
+                            </td>
                         </tr>
                         <tr>
                             <td>Uneindeutig</td>
@@ -81,6 +102,13 @@
                                         style="width: {{ fuellstaende.uneindeutig }}%;">
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'reset_fuellstand' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="art" value="Uneindeutig">
+                                    <button type="submit">Zurücksetzen</button>
+                                </form>
                             </td>
                         </tr>
                     </tbody>
@@ -105,13 +133,6 @@
         
         <div class="standardDivclass">
             <h2 class="versteckenclass hauptUeberschriftenclass" onclick="versteckeLogbuch('logbuchid')">Logbuch</h2>
-            <label for="zeitraum">Zeitraum filtern:</label>
-            <select id="zeitraum" class="filterDropdown">
-                <option>Letzte Stunde</option>
-                <option>Heute</option>
-                <option>Diese Woche</option>
-                <option>Diesen Monat</option>
-            </select>
             <div class="tabellenScrollerClass">
                 <table id="logbuchid">
                     <thead>

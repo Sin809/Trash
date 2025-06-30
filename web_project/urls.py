@@ -39,6 +39,7 @@ urlpatterns = [
     path('tr/admin/benutzer/hochsetzen/<uuid:benutzer_id>/', tmpl_views.rolle_hochsetzen, name='rolle_hochsetzen'),
     path('tr/admin/benutzer/runtersetzen/<uuid:benutzer_id>/', tmpl_views.rolle_runtersetzen, name='rolle_runtersetzen'),
     path('tr/flyer', tmpl_views.flyer_html, name='flyer'),
+    path("tr/dashboard/reset_fuellstand/", tmpl_views.reset_fuellstand, name="reset_fuellstand"),
 
 
 ]

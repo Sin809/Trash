@@ -400,6 +400,8 @@ def get_system_resources(host, port, user, password):
 
 #Dashboard
 #S
+from datetime import datetime
+
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -408,27 +410,46 @@ def dashboard_html(request):
     uuid_value = request.session.get('uuid')
     eintraege = []
     zaehler = {'Papier': 0, 'Plastik': 0, 'Restmüll': 0, 'Uneindeutig': 0}
+    reset_zeitpunkte = {}
 
     if os.path.exists(logbuchXmlPfad):
         tree = xmlStrukturierenLogbuch()
         root = tree.getroot()
 
         benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
-        
         if benutzer_element is not None:
+            # Lade Reset-Zeitpunkte
+            reset_element = benutzer_element.find('reset')
+            if reset_element is not None:
+                for art in zaehler.keys():
+                    zeit_text = reset_element.get(art.lower())
+                    if zeit_text:
+                        try:
+                            reset_zeitpunkte[art] = datetime.strptime(zeit_text, "%d.%m.%Y %H:%M:%S")
+                        except ValueError:
+                            pass
+
             for eintrag in benutzer_element.findall('eintrag'):
                 zeit = eintrag.findtext('zeit')
                 art = eintrag.findtext('art')
                 bild_url = eintrag.findtext('bild_url', default='Kein Bild gemacht')
-                eintraege.append({'zeit': zeit, 'art': art, 'bild_url': bild_url})
-                if art in zaehler:
-                    zaehler[art] += 1
 
-    # Füllstände max 10
-    fuellstaende = {}
-    for art, count in zaehler.items():
-        prozent = min(round((count / 10) * 100), 100)
-        fuellstaende[art.lower()] = prozent
+                eintraege.append({'zeit': zeit, 'art': art, 'bild_url': bild_url})
+
+                if art in zaehler:
+                    try:
+                        eintragszeit = datetime.strptime(zeit, "%d.%m.%Y %H:%M")
+                        reset_zeit = reset_zeitpunkte.get(art)
+                        if reset_zeit is None or eintragszeit > reset_zeit:
+                            zaehler[art] += 1
+                    except ValueError:
+                        pass
+
+    # Max 10 Einträge für 100 %
+    fuellstaende = {
+        art.lower(): min(round((count / 10) * 100), 100)
+        for art, count in zaehler.items()
+    }
 
     rpi_online = False
     if request.method == "POST":
@@ -439,6 +460,42 @@ def dashboard_html(request):
         "fuellstaende": fuellstaende,
         "rpi_online": rpi_online,
     })
+
+
+#S
+def reset_fuellstand(request):
+    if request.method != 'POST':
+        return redirect('dashboard')
+
+    art = request.POST.get('art')
+    uuid_value = request.session.get('uuid')
+    if not art or not uuid_value:
+        return redirect('dashboard')
+
+    if not os.path.exists(logbuchXmlPfad):
+        return redirect('dashboard')
+
+    try:
+        tree = xmlStrukturierenLogbuch()
+        root = tree.getroot()
+        benutzer = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
+        if benutzer is None:
+            return redirect('dashboard')
+
+        # Finde oder erstelle ein "reset" Element, um Rücksetz-Zeitpunkt zu speichern
+        reset_element = benutzer.find('reset')
+        if reset_element is None:
+            reset_element = ET.SubElement(benutzer, 'reset')
+
+        # Setze Rücksetzzeit für die gegebene Müllart
+        reset_element.set(art.lower(), datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
+
+        tree.write(logbuchXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
+
+    except Exception as e:
+        print(f"Fehler beim Zurücksetzen des Füllstands: {e}")
+
+    return redirect('dashboard')
 
 #S
 def finde_benutzername(uuid):

@@ -888,6 +888,52 @@ def api_upload(request):
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
+#A
+@csrf_exempt
+def api_fuellstand(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+    try:
+        daten = json.loads(request.body.decode())
+    except Exception:
+        return JsonResponse({"error": "Ungültige JSON"}, status=400)
+
+    pi_id = daten.get("pi_id")
+    messung = daten.get("messung")  # erwartet: z. B. { "Papier": 77.6 }
+
+    if not pi_id or not isinstance(messung, dict):
+        return JsonResponse({"error": "Fehlende oder ungültige Felder"}, status=400)
+
+    pi_user_path = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'pi_user.json')
+    if not os.path.exists(pi_user_path):
+        return JsonResponse({"error": "Zuordnungsdatei fehlt"}, status=500)
+
+    with open(pi_user_path, "r") as f:
+        pi_mapping = json.load(f)
+
+    user_id = pi_mapping.get(pi_id)
+    if not user_id:
+        return JsonResponse({"error": "Unbekannte Pi-ID"}, status=403)
+
+    speicherpfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstand.json')
+
+    if os.path.exists(speicherpfad):
+        try:
+            with open(speicherpfad, "r") as f:
+                fuellstand = json.load(f)
+        except Exception:
+            fuellstand = {}
+    else:
+        fuellstand = {}
+
+    fuellstand.update(messung)
+
+    with open(speicherpfad, "w") as f:
+        json.dump(fuellstand, f, indent=2)
+
+    return JsonResponse({"status": "aktualisiert", "daten": messung})
+
 
 
 """

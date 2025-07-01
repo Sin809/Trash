@@ -40,6 +40,8 @@ class Benutzer:
 #Allgemeine Pfade für die XMls
 benutzerXmlPfad = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
 logbuchXmlPfad = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
+fuellstandXmlPfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstände.xml')
+
 
 
 #Hilfsfunktionen für die Verarbeitung der XML
@@ -400,8 +402,6 @@ def get_system_resources(host, port, user, password):
 
 #Dashboard
 #S
-from datetime import datetime
-
 def dashboard_html(request):
     check = benutzer_ist_eingeloggt(request)
     if check:
@@ -409,48 +409,47 @@ def dashboard_html(request):
 
     uuid_value = request.session.get('uuid')
     eintraege = []
-    zaehler = {'Papier': 0, 'Plastik': 0, 'Restmüll': 0, 'Uneindeutig': 0}
-    reset_zeitpunkte = {}
 
+    # Logbucheinträge laden
     if os.path.exists(logbuchXmlPfad):
         tree = xmlStrukturierenLogbuch()
         root = tree.getroot()
-
         benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
         if benutzer_element is not None:
-            # Lade Reset-Zeitpunkte
-            reset_element = benutzer_element.find('reset')
-            if reset_element is not None:
-                for art in zaehler.keys():
-                    zeit_text = reset_element.get(art.lower())
-                    if zeit_text:
-                        try:
-                            reset_zeitpunkte[art] = datetime.strptime(zeit_text, "%d.%m.%Y %H:%M:%S")
-                        except ValueError:
-                            pass
-
             for eintrag in benutzer_element.findall('eintrag'):
                 zeit = eintrag.findtext('zeit')
                 art = eintrag.findtext('art')
                 bild_url = eintrag.findtext('bild_url', default='Kein Bild gemacht')
-
                 eintraege.append({'zeit': zeit, 'art': art, 'bild_url': bild_url})
 
-                if art in zaehler:
-                    try:
-                        eintragszeit = datetime.strptime(zeit, "%d.%m.%Y %H:%M")
-                        reset_zeit = reset_zeitpunkte.get(art)
-                        if reset_zeit is None or eintragszeit > reset_zeit:
-                            zaehler[art] += 1
-                    except ValueError:
-                        pass
-
-    # Max 10 Einträge für 100 %
+    # Füllstände initialisieren
     fuellstaende = {
-        art.lower(): min(round((count / 10) * 100), 100)
-        for art, count in zaehler.items()
+        "papier": 0.0,
+        "plastik": 0.0,
+        "restmüll": 0.0,
+        "uneindeutig": 0.0
     }
 
+    # Füllstände aus XML laden
+    if os.path.exists(fuellstandXmlPfad):
+        try:
+            tree = ET.parse(fuellstandXmlPfad)
+            root = tree.getroot()
+            benutzer = root.find(f".//Benutzer[@id='{uuid_value}']")
+            if benutzer is not None:
+                for wert in benutzer.findall("Wert"):
+                    typ = wert.get("typ")
+                    if typ:
+                        typ_key = typ.lower()  # z. B. "Restmüll in XML" zu "restmüll"
+                        if typ_key in fuellstaende:
+                            try:
+                                fuellstaende[typ_key] = float(wert.text)
+                            except (ValueError, TypeError):
+                                fuellstaende[typ_key] = 0.0  # Fehlerhafte Werte ignorieren
+        except Exception as e:
+            print(f"[Fehler beim Einlesen der Füllstände]: {e}")
+
+    # Raspberry Pi Status prüfen
     rpi_online = False
     if request.method == "POST":
         rpi_online = checkRPiOnline("sinanpi", 22)
@@ -460,7 +459,6 @@ def dashboard_html(request):
         "fuellstaende": fuellstaende,
         "rpi_online": rpi_online,
     })
-
 
 #S
 def reset_fuellstand(request):
@@ -472,28 +470,21 @@ def reset_fuellstand(request):
     if not art or not uuid_value:
         return redirect('dashboard')
 
-    if not os.path.exists(logbuchXmlPfad):
+    if not os.path.exists(fuellstandXmlPfad):
         return redirect('dashboard')
 
     try:
-        tree = xmlStrukturierenLogbuch()
+        tree = ET.parse(fuellstandXmlPfad)
         root = tree.getroot()
-        benutzer = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
-        if benutzer is None:
-            return redirect('dashboard')
-
-        # Finde oder erstelle ein "reset" Element, um Rücksetz-Zeitpunkt zu speichern
-        reset_element = benutzer.find('reset')
-        if reset_element is None:
-            reset_element = ET.SubElement(benutzer, 'reset')
-
-        # Setze Rücksetzzeit für die gegebene Müllart
-        reset_element.set(art.lower(), datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
-
-        tree.write(logbuchXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
-
+        benutzer = root.find(f".//Benutzer[@id='{uuid_value}']")
+        if benutzer is not None:
+            for wert in benutzer.findall("Wert"):
+                if wert.get("typ").lower() == art.lower():
+                    wert.text = "0.0"
+                    break
+            tree.write(fuellstandXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
     except Exception as e:
-        print(f"Fehler beim Zurücksetzen des Füllstands: {e}")
+        print(f"Fehler beim Zurücksetzen: {e}")
 
     return redirect('dashboard')
 
@@ -860,11 +851,10 @@ def api_upload(request):
 
         benutzername = benutzer_element.findtext("benutzername")
 
-        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", benutzername)
-        os.makedirs(speicherpfad, exist_ok=True)
+        os.makedirs(fuellstandXmlPfad, exist_ok=True)
 
         dateiname = f"{datum.replace('-', '')}_{uhrzeit.replace(':', '')}_{label}_{wahrscheinlichkeit}.jpg"
-        zielpfad = os.path.join(speicherpfad, dateiname)
+        zielpfad = os.path.join(fuellstandXmlPfad, dateiname)
 
         with open(zielpfad, "wb") as datei:
             datei.write(bild.read())
@@ -916,12 +906,10 @@ def api_fuellstand(request):
     if not user_id:
         return JsonResponse({"error": "Unbekannte Pi-ID"}, status=403)
 
-    speicherpfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstände.xml')
-
-    if os.path.exists(speicherpfad):
+    if os.path.exists(fuellstandXmlPfad):
         try:
             parser = ET.XMLParser(remove_blank_text=True)
-            tree = ET.parse(speicherpfad, parser)
+            tree = ET.parse(fuellstandXmlPfad, parser)
             root = tree.getroot()
         except Exception:
             root = ET.Element("Fuellstaende")
@@ -939,7 +927,7 @@ def api_fuellstand(request):
         wert_elem = ET.SubElement(user_elem, "Wert", typ=art)
         wert_elem.text = str(wert)
 
-    tree.write(speicherpfad, encoding="utf-8", pretty_print=True, xml_declaration=True)
+    tree.write(fuellstandXmlPfad, encoding="utf-8", pretty_print=True, xml_declaration=True)
 
     return JsonResponse({"status": "aktualisiert", "daten": messung})
 

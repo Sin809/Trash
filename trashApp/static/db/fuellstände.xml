@@ -2,8 +2,14 @@
 <Fuellstaende>
   <Benutzer id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
     <Wert typ="Restmüll">0.0</Wert>
-    <Wert typ="Plastik">0.0</Wert>
+    <Wert typ="Plastik">10.0</Wert>
     <Wert typ="Papier">68.1</Wert>
     <Wert typ="Uneindeutig">0.0</Wert>
+  </Benutzer>
+  <Benutzer id="4442375f-806a-490f-90af-83898ffa4d7a">
+    <Wert typ="Restmüll">30.0</Wert>
+    <Wert typ="Plastik">10.0</Wert>
+    <Wert typ="Papier">0.0</Wert>
+    <Wert typ="Uneindeutig">2.0</Wert>
   </Benutzer>
 </Fuellstaende>

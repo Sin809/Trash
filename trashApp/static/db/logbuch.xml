@@ -20,7 +20,13 @@
       <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>sin</benutzername>
     </eintrag>
-  </benutzer> 
+    <eintrag>
+      <zeit>01.07.2025 19:03</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>sin</benutzername>
+    </eintrag>
+  </benutzer>
   <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">
     <eintrag>
       <zeit>26.05.2025 12:11:26</zeit>
@@ -45,6 +51,12 @@
       <art>Plastik</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_104212_Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>01.07.2025 19:03</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>Mustermann</benutzername>
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
@@ -313,6 +325,12 @@
       <zeit>2025.07.01 18:32:44</zeit>
       <art>Papier</art>
       <bild_url>/static/klassifikation/Max/20250701_183244_Papier_98.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>01.07.2025 19:05</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
   </benutzer>

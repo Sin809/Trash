@@ -315,6 +315,31 @@
       <bild_url>/static/klassifikation/Max/20250701_183244_Papier_98.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
+    <eintrag>
+      <zeit>2025.07.01 21:21:00</zeit>
+      <art>Papier</art>
+      <bild_url>/static/klassifikation/Max/20250701_212100_Papier_88.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <reset restmüll="01.07.2025 21:23:34"/>
+    <eintrag>
+      <zeit>2025.07.01 21:30:53</zeit>
+      <art>Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250701_213053_Plastik_97.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.01 21:49:14</zeit>
+      <art>Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250701_214914_Plastik_100.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.01 21:49:36</zeit>
+      <art>Papier</art>
+      <bild_url>/static/klassifikation/Max/20250701_214936_Papier_100.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
   </benutzer>
   <benutzer benutzer_id="fe5ba143-fb94-463d-842e-3d3198738461">
     <eintrag>

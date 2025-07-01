@@ -75,6 +75,42 @@
       <bild_url>/static/klassifikation/Max/20250623_132412_Restmüll.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
+    <eintrag>
+      <zeit>2025.06.30 00:21:05</zeit>
+      <art>0 Papier</art>
+      <bild_url>/static/klassifikation/Max/20250630_002105_0 Papier_98.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.30 17:15:07</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250630_171507_2 Restmüll_95.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.30 17:15:54</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250630_171554_2 Restmüll_98.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.30 18:32:57</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250630_183257_2 Restmüll_86.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.30 18:34:07</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250630_183407_2 Restmüll_98.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.06.30 19:39:30</zeit>
+      <art>2 Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250630_193930_2 Restmüll_70.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
   </benutzer>
   <benutzer benutzer_id="fe5ba143-fb94-463d-842e-3d3198738461">
     <eintrag>

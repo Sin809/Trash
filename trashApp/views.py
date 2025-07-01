@@ -900,7 +900,7 @@ def api_fuellstand(request):
         return JsonResponse({"error": "Ungültige JSON"}, status=400)
 
     pi_id = daten.get("pi_id")
-    messung = daten.get("messung")  # erwartet: z. B. { "Papier": 77.6 }
+    messung = daten.get("messung")
 
     if not pi_id or not isinstance(messung, dict):
         return JsonResponse({"error": "Fehlende oder ungültige Felder"}, status=400)
@@ -916,21 +916,30 @@ def api_fuellstand(request):
     if not user_id:
         return JsonResponse({"error": "Unbekannte Pi-ID"}, status=403)
 
-    speicherpfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstand.json')
+    speicherpfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstände.xml')
 
     if os.path.exists(speicherpfad):
         try:
-            with open(speicherpfad, "r") as f:
-                fuellstand = json.load(f)
+            parser = ET.XMLParser(remove_blank_text=True)
+            tree = ET.parse(speicherpfad, parser)
+            root = tree.getroot()
         except Exception:
-            fuellstand = {}
+            root = ET.Element("Fuellstaende")
+            tree = ET.ElementTree(root)
     else:
-        fuellstand = {}
+        root = ET.Element("Fuellstaende")
+        tree = ET.ElementTree(root)
 
-    fuellstand.update(messung)
+    for eintrag in root.findall("Benutzer"):
+        if eintrag.get("id") == str(user_id):
+            root.remove(eintrag)
 
-    with open(speicherpfad, "w") as f:
-        json.dump(fuellstand, f, indent=2)
+    user_elem = ET.SubElement(root, "Benutzer", id=str(user_id))
+    for art, wert in messung.items():
+        wert_elem = ET.SubElement(user_elem, "Wert", typ=art)
+        wert_elem.text = str(wert)
+
+    tree.write(speicherpfad, encoding="utf-8", pretty_print=True, xml_declaration=True)
 
     return JsonResponse({"status": "aktualisiert", "daten": messung})
 

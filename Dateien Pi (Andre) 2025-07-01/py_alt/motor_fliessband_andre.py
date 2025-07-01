@@ -30,7 +30,7 @@ def Step8(): set_pin(in4, True); set_pin(in1, True); sleep(time_step); set_pin(i
 
 def fliessband_drehen(steps=130):
     """
-    Dreht den Motor um eine bestimmte Anzahl Steps (z.B. 130 = 90 Grad)
+    Dreht den Motor um eine bestimmte Anzahl Steps (z. B. 130 = 90 Grad)
     und misst danach automatisch den Füllstand via Ultraschallsensor.
     """
     print(f"Starte Drehung um {steps} Steps …")

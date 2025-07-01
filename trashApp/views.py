@@ -888,6 +888,61 @@ def api_upload(request):
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
 
+#A
+@csrf_exempt
+def api_fuellstand(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+    try:
+        daten = json.loads(request.body.decode())
+    except Exception:
+        return JsonResponse({"error": "Ungültige JSON"}, status=400)
+
+    pi_id = daten.get("pi_id")
+    messung = daten.get("messung")
+
+    if not pi_id or not isinstance(messung, dict):
+        return JsonResponse({"error": "Fehlende oder ungültige Felder"}, status=400)
+
+    pi_user_path = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'pi_user.json')
+    if not os.path.exists(pi_user_path):
+        return JsonResponse({"error": "Zuordnungsdatei fehlt"}, status=500)
+
+    with open(pi_user_path, "r") as f:
+        pi_mapping = json.load(f)
+
+    user_id = pi_mapping.get(pi_id)
+    if not user_id:
+        return JsonResponse({"error": "Unbekannte Pi-ID"}, status=403)
+
+    speicherpfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstände.xml')
+
+    if os.path.exists(speicherpfad):
+        try:
+            parser = ET.XMLParser(remove_blank_text=True)
+            tree = ET.parse(speicherpfad, parser)
+            root = tree.getroot()
+        except Exception:
+            root = ET.Element("Fuellstaende")
+            tree = ET.ElementTree(root)
+    else:
+        root = ET.Element("Fuellstaende")
+        tree = ET.ElementTree(root)
+
+    for eintrag in root.findall("Benutzer"):
+        if eintrag.get("id") == str(user_id):
+            root.remove(eintrag)
+
+    user_elem = ET.SubElement(root, "Benutzer", id=str(user_id))
+    for art, wert in messung.items():
+        wert_elem = ET.SubElement(user_elem, "Wert", typ=art)
+        wert_elem.text = str(wert)
+
+    tree.write(speicherpfad, encoding="utf-8", pretty_print=True, xml_declaration=True)
+
+    return JsonResponse({"status": "aktualisiert", "daten": messung})
+
 
 
 """

@@ -10,10 +10,6 @@
     <eintrag>
       <zeit>26.05.2025 10:36:03</zeit>
       <art>Plastik</art>
-<<<<<<< HEAD
-      <benutzername>sin</benutzername>
-      <bild_url>/static/klassifikation/20250526_103603_Plastik.jpg</bild_url>
-=======
       <benutzername>sin</benutzername>
       <bild_url>/static/klassifikation/20250526_103603_Plastik.jpg</bild_url>
     </eintrag>
@@ -29,7 +25,6 @@
       <art>Papier</art>
       <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>sin</benutzername>
->>>>>>> fc52ee1227f5b74009ea1da2d30f45fbdd0e2990
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">
@@ -336,6 +331,66 @@
       <zeit>01.07.2025 19:05</zeit>
       <art>Papier</art>
       <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 11:37:25</zeit>
+      <art>Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250702_113725_Restmüll_87.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 11:46:12</zeit>
+      <art>Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250702_114612_Restmüll_94.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 11:49:21</zeit>
+      <art>Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250702_114921_Restmüll_51.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 11:50:51</zeit>
+      <art>Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250702_115051_Restmüll_100.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 11:57:24</zeit>
+      <art>Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250702_115724_Plastik_60.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 11:59:27</zeit>
+      <art>Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250702_115927_Plastik_69.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 12:05:41</zeit>
+      <art>Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250702_120541_Restmüll_56.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 12:15:41</zeit>
+      <art>Plastik</art>
+      <bild_url>/static/klassifikation/Max/20250702_121541_Plastik_58.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 12:16:37</zeit>
+      <art>Restmüll</art>
+      <bild_url>/static/klassifikation/Max/20250702_121637_Restmüll_100.jpg</bild_url>
+      <benutzername>Max</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>2025.07.02 12:17:08</zeit>
+      <art>Papier</art>
+      <bild_url>/static/klassifikation/Max/20250702_121708_Papier_88.jpg</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
   </benutzer>

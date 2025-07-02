@@ -40,6 +40,8 @@ class Benutzer:
 #Allgemeine Pfade für die XMls
 benutzerXmlPfad = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'benutzer.xml')
 logbuchXmlPfad = os.path.join(os.getcwd(), 'trashApp', 'static', 'db', 'logbuch.xml')
+fuellstandXmlPfad = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'fuellstände.xml')
+
 
 
 #Hilfsfunktionen für die Verarbeitung der XML
@@ -407,29 +409,47 @@ def dashboard_html(request):
 
     uuid_value = request.session.get('uuid')
     eintraege = []
-    zaehler = {'Papier': 0, 'Plastik': 0, 'Restmüll': 0, 'Uneindeutig': 0}
 
+    # Logbucheinträge laden
     if os.path.exists(logbuchXmlPfad):
         tree = xmlStrukturierenLogbuch()
         root = tree.getroot()
-
         benutzer_element = root.find(f"benutzer[@benutzer_id='{uuid_value}']")
-        
         if benutzer_element is not None:
             for eintrag in benutzer_element.findall('eintrag'):
                 zeit = eintrag.findtext('zeit')
                 art = eintrag.findtext('art')
                 bild_url = eintrag.findtext('bild_url', default='Kein Bild gemacht')
                 eintraege.append({'zeit': zeit, 'art': art, 'bild_url': bild_url})
-                if art in zaehler:
-                    zaehler[art] += 1
 
-    # Füllstände max 10
-    fuellstaende = {}
-    for art, count in zaehler.items():
-        prozent = min(round((count / 10) * 100), 100)
-        fuellstaende[art.lower()] = prozent
+    # Füllstände initialisieren
+    fuellstaende = {
+        "papier": 0.0,
+        "plastik": 0.0,
+        "restmüll": 0.0,
+        "uneindeutig": 0.0
+    }
 
+    # Füllstände aus XML laden
+    if os.path.exists(fuellstandXmlPfad):
+        try:
+            tree = ET.parse(fuellstandXmlPfad)
+            root = tree.getroot()
+            benutzer = root.find(f".//Benutzer[@id='{uuid_value}']")
+            if benutzer is not None:
+                for wert in benutzer.findall("Wert"):
+                    typ = wert.get("typ")
+                    if typ:
+                        typ_key = typ.lower()  # z. B. "Restmüll in XML" zu "restmüll"
+                        if typ_key in fuellstaende:
+                            try:
+                                fuellstaende[typ_key] = float(wert.text)
+                            except (ValueError, TypeError):
+                                fuellstaende[typ_key] = 0.0  # Fehlerhafte Werte ignorieren
+        except Exception as e:
+            print(f"[Fehler beim Einlesen der Füllstände]: {e}")
+
+    # Raspberry Pi Status prüfen
     rpi_online = False
     if request.method == "POST":
         rpi_online = checkRPiOnline("sinanpi", 22)
@@ -439,6 +459,34 @@ def dashboard_html(request):
         "fuellstaende": fuellstaende,
         "rpi_online": rpi_online,
     })
+
+#S
+def reset_fuellstand(request):
+    if request.method != 'POST':
+        return redirect('dashboard')
+
+    art = request.POST.get('art')
+    uuid_value = request.session.get('uuid')
+    if not art or not uuid_value:
+        return redirect('dashboard')
+
+    if not os.path.exists(fuellstandXmlPfad):
+        return redirect('dashboard')
+
+    try:
+        tree = ET.parse(fuellstandXmlPfad)
+        root = tree.getroot()
+        benutzer = root.find(f".//Benutzer[@id='{uuid_value}']")
+        if benutzer is not None:
+            for wert in benutzer.findall("Wert"):
+                if wert.get("typ").lower() == art.lower():
+                    wert.text = "0.0"
+                    break
+            tree.write(fuellstandXmlPfad, encoding='utf-8', xml_declaration=True, pretty_print=True)
+    except Exception as e:
+        print(f"Fehler beim Zurücksetzen: {e}")
+
+    return redirect('dashboard')
 
 #S
 def finde_benutzername(uuid):
@@ -803,11 +851,10 @@ def api_upload(request):
 
         benutzername = benutzer_element.findtext("benutzername")
 
-        speicherpfad = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation", benutzername)
-        os.makedirs(speicherpfad, exist_ok=True)
+        os.makedirs(fuellstandXmlPfad, exist_ok=True)
 
         dateiname = f"{datum.replace('-', '')}_{uhrzeit.replace(':', '')}_{label}_{wahrscheinlichkeit}.jpg"
-        zielpfad = os.path.join(speicherpfad, dateiname)
+        zielpfad = os.path.join(fuellstandXmlPfad, dateiname)
 
         with open(zielpfad, "wb") as datei:
             datei.write(bild.read())
@@ -830,6 +877,59 @@ def api_upload(request):
         return JsonResponse({"status": "erfolgreich", "filename": dateiname})
 
     return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+#A
+@csrf_exempt
+def api_fuellstand(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Nur POST erlaubt"}, status=405)
+
+    try:
+        daten = json.loads(request.body.decode())
+    except Exception:
+        return JsonResponse({"error": "Ungültige JSON"}, status=400)
+
+    pi_id = daten.get("pi_id")
+    messung = daten.get("messung")
+
+    if not pi_id or not isinstance(messung, dict):
+        return JsonResponse({"error": "Fehlende oder ungültige Felder"}, status=400)
+
+    pi_user_path = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'pi_user.json')
+    if not os.path.exists(pi_user_path):
+        return JsonResponse({"error": "Zuordnungsdatei fehlt"}, status=500)
+
+    with open(pi_user_path, "r") as f:
+        pi_mapping = json.load(f)
+
+    user_id = pi_mapping.get(pi_id)
+    if not user_id:
+        return JsonResponse({"error": "Unbekannte Pi-ID"}, status=403)
+
+    if os.path.exists(fuellstandXmlPfad):
+        try:
+            parser = ET.XMLParser(remove_blank_text=True)
+            tree = ET.parse(fuellstandXmlPfad, parser)
+            root = tree.getroot()
+        except Exception:
+            root = ET.Element("Fuellstaende")
+            tree = ET.ElementTree(root)
+    else:
+        root = ET.Element("Fuellstaende")
+        tree = ET.ElementTree(root)
+
+    for eintrag in root.findall("Benutzer"):
+        if eintrag.get("id") == str(user_id):
+            root.remove(eintrag)
+
+    user_elem = ET.SubElement(root, "Benutzer", id=str(user_id))
+    for art, wert in messung.items():
+        wert_elem = ET.SubElement(user_elem, "Wert", typ=art)
+        wert_elem.text = str(wert)
+
+    tree.write(fuellstandXmlPfad, encoding="utf-8", pretty_print=True, xml_declaration=True)
+
+    return JsonResponse({"status": "aktualisiert", "daten": messung})
 
 
 
@@ -876,3 +976,9 @@ def aendere_art(request):
 
     return redirect('test')
 """
+
+
+#Flyer
+#S
+def flyer_html(request):
+    return render(request, 'trashApp/flyer.html')

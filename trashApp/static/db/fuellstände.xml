@@ -7,9 +7,9 @@
     <Wert typ="Uneindeutig">2.0</Wert>
   </Benutzer>
   <Benutzer id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
-    <Wert typ="Restmüll">59.1</Wert>
-    <Wert typ="Plastik">59.2</Wert>
-    <Wert typ="Papier">59.1</Wert>
+    <Wert typ="Restmüll">12.0</Wert>
+    <Wert typ="Plastik">15.2</Wert>
+    <Wert typ="Papier">16.9</Wert>
     <Wert typ="Uneindeutig">0.0</Wert>
   </Benutzer>
 </Fuellstaende>

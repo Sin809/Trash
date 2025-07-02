@@ -10,6 +10,10 @@
     <eintrag>
       <zeit>26.05.2025 10:36:03</zeit>
       <art>Plastik</art>
+<<<<<<< HEAD
+      <benutzername>sin</benutzername>
+      <bild_url>/static/klassifikation/20250526_103603_Plastik.jpg</bild_url>
+=======
       <benutzername>sin</benutzername>
       <bild_url>/static/klassifikation/20250526_103603_Plastik.jpg</bild_url>
     </eintrag>
@@ -19,6 +23,13 @@
       <art>Papier</art>
       <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>sin</benutzername>
+    </eintrag>
+    <eintrag>
+      <zeit>01.07.2025 19:03</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>sin</benutzername>
+>>>>>>> fc52ee1227f5b74009ea1da2d30f45fbdd0e2990
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="0f7f6cd8-350c-4d54-9e9b-37def97da98a">
@@ -45,6 +56,12 @@
       <art>Plastik</art>
       <benutzername>Mustermann</benutzername>
       <bild_url>/static/klassifikation/20250526_104212_Plastik.jpg</bild_url>
+    </eintrag>
+    <eintrag>
+      <zeit>01.07.2025 19:03</zeit>
+      <art>Papier</art>
+      <bild_url>Kein Bild gemacht</bild_url>
+      <benutzername>Mustermann</benutzername>
     </eintrag>
   </benutzer>
   <benutzer benutzer_id="4ca2e077-4e5e-42ab-8aa6-c15336fb88a9">
@@ -316,28 +333,9 @@
       <benutzername>Max</benutzername>
     </eintrag>
     <eintrag>
-      <zeit>2025.07.01 21:21:00</zeit>
+      <zeit>01.07.2025 19:05</zeit>
       <art>Papier</art>
-      <bild_url>/static/klassifikation/Max/20250701_212100_Papier_88.jpg</bild_url>
-      <benutzername>Max</benutzername>
-    </eintrag>
-    <reset restmüll="01.07.2025 21:23:34"/>
-    <eintrag>
-      <zeit>2025.07.01 21:30:53</zeit>
-      <art>Plastik</art>
-      <bild_url>/static/klassifikation/Max/20250701_213053_Plastik_97.jpg</bild_url>
-      <benutzername>Max</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>2025.07.01 21:49:14</zeit>
-      <art>Plastik</art>
-      <bild_url>/static/klassifikation/Max/20250701_214914_Plastik_100.jpg</bild_url>
-      <benutzername>Max</benutzername>
-    </eintrag>
-    <eintrag>
-      <zeit>2025.07.01 21:49:36</zeit>
-      <art>Papier</art>
-      <bild_url>/static/klassifikation/Max/20250701_214936_Papier_100.jpg</bild_url>
+      <bild_url>Kein Bild gemacht</bild_url>
       <benutzername>Max</benutzername>
     </eintrag>
   </benutzer>

@@ -28,7 +28,7 @@ def Step7(): set_pin(in1, True); sleep(time_step); set_pin(in1, False)
 def Step8(): set_pin(in4, True); set_pin(in1, True); sleep(time_step); set_pin(in4, False); set_pin(in1, False)
 
 # anzahl der steps noch anpassen!
-def fliessband_drehen(label: str, steps=560):
+def fliessband_drehen(label: str, steps=1000):
     print(f"[Fließband] starte drehung ({steps} schritte) …")
 
     # motor n schritte vorwärts bewegen

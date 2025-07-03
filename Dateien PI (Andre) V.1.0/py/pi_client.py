@@ -23,32 +23,38 @@ PI_ID_PATH = "/home/schambach/Trashy/pi_id.txt"
 with open(PI_ID_PATH, "r") as f:
     PI_ID = f.read().strip()
 
+#modell vorbereiten
 interpreter = tflite.Interpreter(model_path=MODEL_PFAD)
 interpreter.allocate_tensors()
 input_index = interpreter.get_input_details()[0]["index"]
 output_index = interpreter.get_output_details()[0]["index"]
 
-# Labels ohne führende Nummern laden
+# labels ohne ziffern aus der label.txt laden
 with open(LABELS_PFAD, "r") as f:
     LABELS = [zeile.strip().split(" ", 1)[1] for zeile in f if " " in zeile]
 
 TASTER_PIN = 25
+#LED_PIN = 24 #ist der noch frei?
 
 h = lgpio.gpiochip_open(0)
 lgpio.gpio_claim_input(h, TASTER_PIN, lgpio.SET_PULL_UP)
 
 def klassifizieren(pfad):
     bild = Image.open(pfad).resize((224, 224))
-    array = np.expand_dims(np.array(bild, dtype=np.float32) / 255.0, axis=0)
-    interpreter.set_tensor(input_index, array)
-    interpreter.invoke()
-    output = interpreter.get_tensor(output_index)[0]
+    array = np.expand_dims(np.array(bild, dtype=np.float32) / 255.0, axis=0) # bild in zahlen umwandeln
+    interpreter.set_tensor(input_index, array) #bild/zahlen an das ki-modell übergeben
+    interpreter.invoke() 
+    output = interpreter.get_tensor(output_index)[0] #ergebnis holen
 
-    index = int(np.argmax(output))
+    index = int(np.argmax(output)) #label mit höchstem wert/wahrscheinlichkeit
     wahrscheinlichkeit = round(float(output[index]) * 100)
-    label = LABELS[index]
 
-    print(f"[Klassifikation] Index: {index}, Label: {label}, Wahrscheinlichkeit: {wahrscheinlichkeit}%")
+    if wahrscheinlichkeit < 65:
+        label = "Uneindeutig"
+    else:
+        label = LABELS[index]
+
+    print(f"[Klassifikation] Label: {label}, Wahrscheinlichkeit: {wahrscheinlichkeit}%")
 
     return label, wahrscheinlichkeit
 
@@ -77,7 +83,7 @@ def sende_bild(pfad, bildname, label, datum, uhrzeit, wahrscheinlichkeit):
 
 def versuche_ausstehende_bilder_zu_senden():
     os.makedirs(NICHT_GESENDET_VERZEICHNIS, exist_ok=True)
-    for datei in sorted(os.listdir(NICHT_GESENDET_VERZEICHNIS)):
+    for datei in sorted(os.listdir(NICHT_GESENDET_VERZEICHNIS)): #sorted = sortiert alphabetisch
         if not datei.lower().endswith(".jpg"):
             continue
 
@@ -98,7 +104,7 @@ def versuche_ausstehende_bilder_zu_senden():
         pfad = os.path.join(NICHT_GESENDET_VERZEICHNIS, datei)
         neuer_pfad = os.path.join(BILD_VERZEICHNIS, datei)
 
-        if sende_bild(pfad, datei, label, datum, uhrzeit, wahrscheinlichkeit):
+        if sende_bild(pfad, datei, label, datum, uhrzeit, wahrscheinlichkeit): #sende_bild != False
             os.rename(pfad, neuer_pfad)
         else:
             print(f"erneuter Versuch fehlgeschlagen für: {datei}")
@@ -125,7 +131,7 @@ def aufnehmen_und_senden():
     neuer_pfad = os.path.join(BILD_VERZEICHNIS, bildname)
     os.rename(pfad, neuer_pfad)
 
-    drehscheibe_positionieren(label)
+    drehscheibe_positionieren(label)#python wartet bis diese funktion komplett fertig ist, bevor die nächste angestoßen wird
     fliessband_drehen(label)
 
     if not sende_bild(neuer_pfad, bildname, label, datum, uhrzeit, wahrscheinlichkeit):
@@ -145,3 +151,21 @@ if __name__ == "__main__":
                 time.sleep(0.1)
     finally:
         lgpio.gpiochip_close(h)
+
+# if __name__ == "__main__":
+#     try:
+#         while True:
+#             print("Warte auf Tastendruck ...")
+#             lgpio.gpio_write(h, LED_PIN, 1) 
+
+#             while lgpio.gpio_read(h, TASTER_PIN) == 1:
+#                 time.sleep(0.1)
+
+#             lgpio.gpio_write(h, LED_PIN, 0)  
+#             aufnehmen_und_senden()
+
+#             while lgpio.gpio_read(h, TASTER_PIN) == 0:
+#                 time.sleep(0.1)
+#     finally:
+#         lgpio.gpio_write(h, LED_PIN, 0) 
+#         lgpio.gpiochip_close(h)

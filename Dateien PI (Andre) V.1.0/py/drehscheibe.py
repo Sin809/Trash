@@ -46,7 +46,7 @@ def lade_position():
     try:
         with open(position_path, "r") as f:
             data = json.load(f)
-            pos = data.get("position", 0)
+            pos = data.get("position", 0) #0 = papier wenn kein eintrag
             print(f"[Drehscheibe] geladen: {pos} ({BEHAELTER[pos]})")
             return pos
     except Exception as e:
@@ -84,4 +84,5 @@ def drehscheibe_positionieren(label: str):
 
 # test: auf "papier" drehen
 if __name__ == "__main__":
-    drehscheibe
+    drehscheibe_positionieren("Papier")
+

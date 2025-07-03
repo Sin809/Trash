@@ -32,3 +32,8 @@ sudo systemctl disable pi_client.service
 
 6. Bereits laufenden Service unterbrechen:
 sudo systemctl stop pi_client.service
+
+##############################################
+CRONTAB:
+crontab -e
+* * * * * /usr/bin/python3 /home/schambach/Trashy/py/fuellstand_senden.py >> /home/schambach/Trashy/logs/fuellstand.log 2>&1

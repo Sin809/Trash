@@ -280,7 +280,7 @@ def system_html(request):
     
     benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
+    if not ist_admin(str(benutzer_id)):
         return HttpResponse("""
             <script>
                 alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
@@ -668,7 +668,7 @@ def eintragArtAendern(request):
 def admin_html(request):
     benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
+    if not ist_admin(str(benutzer_id)):
         return HttpResponse("""
             <script>
                 alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Admin-Verwaltung.");

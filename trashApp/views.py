@@ -280,10 +280,10 @@ def system_html(request):
     
     benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
-        return HttpResponse("""
+    if not ist_admin(str(benutzer_id)):
+        return HttpResponse(f"""
             <script>
-                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
+                alert("{benutzer_id} Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
                 window.history.back();
             </script>
         """)
@@ -383,14 +383,20 @@ def get_system_resources(host, port, user, password):
 
                 if key == "CPU Details":
                     lines = filtered_output.splitlines()
-                    filtered_lines = [line for line in lines if "Features" not in line]
+                    filtered_lines = []
+                    for line in lines:
+                        if "Features" not in line:
+                            filtered_lines.append(line)
                     filtered_output = "\n".join(filtered_lines)
 
                 elif key == "CPU Info":
                     lines = filtered_output.splitlines()
-                    filtered_lines = [line for line in lines if ("Vulnerability" not in line and "Flags" not in line)]
+                    filtered_lines = []
+                    for line in lines:
+                        if "Vulnerability" not in line and "Flags" not in line:
+                            filtered_lines.append(line)
                     filtered_output = "\n".join(filtered_lines)
-
+                    
                 results[key] = filtered_output
 
         ssh.close()
@@ -573,6 +579,7 @@ def eintragLoeschen(request):
 
     return redirect('dashboard')
 
+
 #Allgemiene Pfade für Bildordner
 #S
 BILDER_ORDNER_REL_XML = '/static/klassifikation'
@@ -668,7 +675,7 @@ def eintragArtAendern(request):
 def admin_html(request):
     benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
+    if not ist_admin(str(benutzer_id)):
         return HttpResponse("""
             <script>
                 alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Admin-Verwaltung.");

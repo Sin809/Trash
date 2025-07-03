@@ -281,9 +281,9 @@ def system_html(request):
     benutzer_id = request.session.get('uuid')
 
     if not ist_admin(str(benutzer_id)):
-        return HttpResponse("""
+        return HttpResponse(f"""
             <script>
-                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
+                alert("{benutzer_id} Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
                 window.history.back();
             </script>
         """)
@@ -572,6 +572,7 @@ def eintragLoeschen(request):
         return redirect('dashboard')
 
     return redirect('dashboard')
+
 
 #Allgemiene Pfade für Bildordner
 #S

@@ -5,7 +5,10 @@ import os
 
 TRIG = 22
 ECHO = 27
-TANK_HOEHE_CM = 50.0 #enstprechend anpassen
+BEHAELTER_HOEHE_CM = 15 #enstrepchend anpassen
+ABSTAND_SENSOR_CM = 2 #enstrepchend anpassen
+TANK_HOEHE_CM = BEHAELTER_HOEHE_CM + ABSTAND_SENSOR_CM
+
 FUELLDATEI = "/home/schambach/Trashy/fuellstand.json"
 
 # GPIO initialisieren
@@ -50,7 +53,7 @@ def berechne_fuellstand(label=None):
         return None, None
 
     fuellhoehe = max(0.0, TANK_HOEHE_CM - abstand)
-    prozent = min(100.0, (fuellhoehe / TANK_HOEHE_CM) * 100)
+    prozent = min(100.0, (fuellhoehe / BEHAELTER_HOEHE_CM) * 100)
 
     if label:
         daten = {}

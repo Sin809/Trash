@@ -10,7 +10,8 @@ import time
 from drehscheibe import drehscheibe_positionieren
 from fliessband import fliessband_drehen
 
-SERVER_URL = "http://error.taild6d121.ts.net:8000/api/upload/" # Andre Lokal Tailscale VPN
+#SERVER_URL = "http://error.taild6d121.ts.net:8000/api/upload/" # Andre Lokal Tailscale VPN
+SERVER_URL = "http://laptop.taild6d121.ts.net:8000/api/upload/" # Andre Laptop VPN
 #SERVER_URL = "http://dat23.taild6d121.ts.net:8000/api/upload/" # Webserver über Tailscale
 #SERVER_URL = "http://[2001:7c0:2320:2:f816:3eff:fea9:8a61]:8000/api/upload/" #IP6 direkt, geht nicht ...
 MODEL_PFAD = "/home/schambach/Trashy/Model/model_unquant.tflite"
@@ -27,11 +28,12 @@ interpreter.allocate_tensors()
 input_index = interpreter.get_input_details()[0]["index"]
 output_index = interpreter.get_output_details()[0]["index"]
 
-# Labels ohne führende Nummern laden
+# labels ohne ziffern aus der label.txt laden
 with open(LABELS_PFAD, "r") as f:
     LABELS = [zeile.strip().split(" ", 1)[1] for zeile in f if " " in zeile]
 
 TASTER_PIN = 25
+#LED_PIN = 24 #ist der noch frei?
 
 h = lgpio.gpiochip_open(0)
 lgpio.gpio_claim_input(h, TASTER_PIN, lgpio.SET_PULL_UP)
@@ -45,7 +47,11 @@ def klassifizieren(pfad):
 
     index = int(np.argmax(output))
     wahrscheinlichkeit = round(float(output[index]) * 100)
-    label = LABELS[index]
+
+    if wahrscheinlichkeit < 65:
+        label = "Uneindeutig"
+    else:
+        label = LABELS[index]
 
     print(f"[Klassifikation] Index: {index}, Label: {label}, Wahrscheinlichkeit: {wahrscheinlichkeit}%")
 
@@ -144,3 +150,21 @@ if __name__ == "__main__":
                 time.sleep(0.1)
     finally:
         lgpio.gpiochip_close(h)
+
+# if __name__ == "__main__":
+#     try:
+#         while True:
+#             print("Warte auf Tastendruck ...")
+#             lgpio.gpio_write(h, LED_PIN, 1) 
+
+#             while lgpio.gpio_read(h, TASTER_PIN) == 1:
+#                 time.sleep(0.1)
+
+#             lgpio.gpio_write(h, LED_PIN, 0)  
+#             aufnehmen_und_senden()
+
+#             while lgpio.gpio_read(h, TASTER_PIN) == 0:
+#                 time.sleep(0.1)
+#     finally:
+#         lgpio.gpio_write(h, LED_PIN, 0) 
+#         lgpio.gpiochip_close(h)

@@ -2,7 +2,8 @@ import requests
 import os
 import json
 
-SERVER_URL = "http://error.taild6d121.ts.net:8000/api/fuellstand/" 
+SERVER_URL = "http://laptop.taild6d121.ts.net:8000/api/fuellstand/" #PC Laptop
+#SERVER_URL = "http://error.taild6d121.ts.net:8000/api/fuellstand/" #PC Andre
 FUELLSTAND_DATEI = "/home/schambach/Trashy/fuellstand.json"
 PI_ID_PATH = "/home/schambach/Trashy/pi_id.txt"
 

@@ -383,14 +383,20 @@ def get_system_resources(host, port, user, password):
 
                 if key == "CPU Details":
                     lines = filtered_output.splitlines()
-                    filtered_lines = [line for line in lines if "Features" not in line]
+                    filtered_lines = []
+                    for line in lines:
+                        if "Features" not in line:
+                            filtered_lines.append(line)
                     filtered_output = "\n".join(filtered_lines)
 
                 elif key == "CPU Info":
                     lines = filtered_output.splitlines()
-                    filtered_lines = [line for line in lines if ("Vulnerability" not in line and "Flags" not in line)]
+                    filtered_lines = []
+                    for line in lines:
+                        if "Vulnerability" not in line and "Flags" not in line:
+                            filtered_lines.append(line)
                     filtered_output = "\n".join(filtered_lines)
-
+                    
                 results[key] = filtered_output
 
         ssh.close()

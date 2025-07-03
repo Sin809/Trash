@@ -814,7 +814,7 @@ def logout(request):
 
 #Bilder vom Pi hochladen/bearbeiten
 #A
-UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
+UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 #A

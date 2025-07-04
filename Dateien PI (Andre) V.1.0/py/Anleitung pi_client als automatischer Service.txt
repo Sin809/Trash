@@ -1,0 +1,34 @@
+1. Service Datei anlegen (Terminal):
+sudo nano /etc/systemd/system/pi_client.service
+
+
+2. Copy&Paste (Ordnerstruktur entsprechend anpassen): 
+[Unit]
+Description=Pi Client Autostart bei Tastendruck
+After=network.target
+
+[Service]
+ExecStart=/home/schambach/Trashy/venv/bin/python /home/schambach/Trashy/py/pi_client.py
+WorkingDirectory=/home/schambach/Trashy
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=schambach
+
+[Install]
+WantedBy=multi-user.target
+
+
+3. Service aktivieren und starten (Terminal):
+sudo systemctl daemon-reexec
+sudo systemctl enable pi_client.service
+sudo systemctl start pi_client.service
+
+4. Status prüfen (Terminal)
+sudo systemctl status pi_client.service
+
+5. Service beenden (optional) - Wird beim nächsten Systemstart nicht mehr ausgeführt:
+sudo systemctl disable pi_client.service
+
+6. Bereits laufenden Service unterbrechen:
+sudo systemctl stop pi_client.service

@@ -280,10 +280,10 @@ def system_html(request):
     
     benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
-        return HttpResponse("""
+    if not ist_admin(str(benutzer_id)):
+        return HttpResponse(f"""
             <script>
-                alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
+                alert("{benutzer_id} Du bist kein Admin und hast somit keine Zugangsberechtigung für die Systemdaten.");
                 window.history.back();
             </script>
         """)
@@ -383,14 +383,20 @@ def get_system_resources(host, port, user, password):
 
                 if key == "CPU Details":
                     lines = filtered_output.splitlines()
-                    filtered_lines = [line for line in lines if "Features" not in line]
+                    filtered_lines = []
+                    for line in lines:
+                        if "Features" not in line:
+                            filtered_lines.append(line)
                     filtered_output = "\n".join(filtered_lines)
 
                 elif key == "CPU Info":
                     lines = filtered_output.splitlines()
-                    filtered_lines = [line for line in lines if ("Vulnerability" not in line and "Flags" not in line)]
+                    filtered_lines = []
+                    for line in lines:
+                        if "Vulnerability" not in line and "Flags" not in line:
+                            filtered_lines.append(line)
                     filtered_output = "\n".join(filtered_lines)
-
+                    
                 results[key] = filtered_output
 
         ssh.close()
@@ -573,6 +579,7 @@ def eintragLoeschen(request):
 
     return redirect('dashboard')
 
+
 #Allgemiene Pfade für Bildordner
 #S
 BILDER_ORDNER_REL_XML = '/static/klassifikation'
@@ -668,7 +675,7 @@ def eintragArtAendern(request):
 def admin_html(request):
     benutzer_id = request.session.get('uuid')
 
-    if not benutzer_id or not ist_admin(str(benutzer_id)):
+    if not ist_admin(str(benutzer_id)):
         return HttpResponse("""
             <script>
                 alert("Du bist kein Admin und hast somit keine Zugangsberechtigung für die Admin-Verwaltung.");
@@ -814,7 +821,7 @@ def logout(request):
 
 #Bilder vom Pi hochladen/bearbeiten
 #A
-UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "uploadbilder")
+UPLOAD_DIR = os.path.join(settings.BASE_DIR, "trashApp", "static", "klassifikation")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 #A
@@ -831,7 +838,6 @@ def api_upload(request):
         if not all([bild, datum, uhrzeit, pi_id]):
             return JsonResponse({"error": "Fehlende Felder"}, status=400)
 
-    
         pi_benutzer = os.path.join(settings.BASE_DIR, 'trashApp', 'static', 'db', 'pi_user.json')
         if not os.path.exists(pi_benutzer):
             return JsonResponse({"error": "Keine Pi-Zuordnungsdatei gefunden"}, status=500)
@@ -851,14 +857,17 @@ def api_upload(request):
 
         benutzername = benutzer_element.findtext("benutzername")
 
-        os.makedirs(fuellstandXmlPfad, exist_ok=True)
+        # Zielordner für Bilder
+        benutzer_bilder_pfad = os.path.join(UPLOAD_DIR, benutzername)
+        os.makedirs(benutzer_bilder_pfad, exist_ok=True)
 
         dateiname = f"{datum.replace('-', '')}_{uhrzeit.replace(':', '')}_{label}_{wahrscheinlichkeit}.jpg"
-        zielpfad = os.path.join(fuellstandXmlPfad, dateiname)
+        zielpfad = os.path.join(benutzer_bilder_pfad, dateiname)
 
         with open(zielpfad, "wb") as datei:
             datei.write(bild.read())
 
+        # Logbucheintrag anlegen
         logbuch_baum = xmlStrukturierenLogbuch() if os.path.exists(logbuchXmlPfad) else ET.ElementTree(ET.Element("logbuch"))
         logbuch_root = logbuch_baum.getroot()
         benutzer_log = logbuch_root.find(f"benutzer[@benutzer_id='{uuid_value}']")

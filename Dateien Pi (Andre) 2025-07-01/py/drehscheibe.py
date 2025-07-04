@@ -4,23 +4,26 @@ import json
 import os
 from time import sleep
 
-# GPIO-Pins für Stepper-Motor der Drehscheibe
 in1, in2, in3, in4 = 12, 16, 20, 21
 time_step = 0.002
+
 position_path = "/home/schambach/Trashy/position.json"
 
-# Zuordnung der Behälter (Reihenfolge auf der Scheibe)
 BEHAELTER = ["Papier", "Plastik", "Restmüll", "Uneindeutig"]
-STEPS_PRO_SEGMENT = 130  # Schritte für 90° (1/4-Drehung)
 
-# GPIO initialisieren
+# 130 = 90°
+STEPS_PRO_SEGMENT = 130
+
 h = lgpio.gpiochip_open(0)
+
+# pins als ausgang setzen
 for pin in [in1, in2, in3, in4]:
     lgpio.gpio_claim_output(h, pin, 0)
 
 def set_pin(pin, state):
     lgpio.gpio_write(h, pin, int(state))
 
+# schritte 1–8
 def Step1(): set_pin(in4, True); sleep(time_step); set_pin(in4, False)
 def Step2(): set_pin(in4, True); set_pin(in3, True); sleep(time_step); set_pin(in4, False); set_pin(in3, False)
 def Step3(): set_pin(in3, True); sleep(time_step); set_pin(in3, False)
@@ -30,50 +33,55 @@ def Step6(): set_pin(in1, True); set_pin(in2, True); sleep(time_step); set_pin(i
 def Step7(): set_pin(in1, True); sleep(time_step); set_pin(in1, False)
 def Step8(): set_pin(in4, True); set_pin(in1, True); sleep(time_step); set_pin(in4, False); set_pin(in1, False)
 
+# motor "anzahl" schritte drehen
 def drehe_steps(anzahl):
     for _ in range(anzahl):
         Step1(); Step2(); Step3(); Step4(); Step5(); Step6(); Step7(); Step8()
 
+# letze position der müllbehälter holen
 def lade_position():
     if not os.path.exists(position_path):
-        print("[Drehscheibe] position.json existiert nicht – Standardposition 0 (Papier)")
+        print("[Drehscheibe] keine position.json – standard = 0")
         return 0
     try:
         with open(position_path, "r") as f:
             data = json.load(f)
-            aktuelle_position = data.get("position", 0)
-            print(f"[Drehscheibe] Geladene Position: {aktuelle_position} ({BEHAELTER[aktuelle_position]})")
-            return aktuelle_position
+            pos = data.get("position", 0)
+            print(f"[Drehscheibe] geladen: {pos} ({BEHAELTER[pos]})")
+            return pos
     except Exception as e:
-        print(f"[Drehscheibe] Fehler beim Laden der Position: {e}")
+        print(f"[Drehscheibe] fehler beim laden: {e}")
         return 0
 
+# neue position speichern
 def speichere_position(pos_index):
     try:
         with open(position_path, "w") as f:
             json.dump({"position": pos_index}, f)
-        print(f"[Drehscheibe] Neue Position gespeichert: {pos_index} ({BEHAELTER[pos_index]})")
+        print(f"[Drehscheibe] gespeichert: {pos_index} ({BEHAELTER[pos_index]})")
     except Exception as e:
-        print(f"[Drehscheibe] Fehler beim Speichern der Position: {e}")
+        print(f"[Drehscheibe] fehler beim speichern: {e}")
 
+# scheibe zum ziel drehen
 def drehscheibe_positionieren(label: str):
-    if label in BEHAELTER:
-        ziel_index = BEHAELTER.index(label)
+    ziel = BEHAELTER.index(label) if label in BEHAELTER else BEHAELTER.index("Uneindeutig")
+    aktuell = lade_position()
+
+    # differenz berechnen, ggf. im kreis weiterzählen
+    if ziel >= aktuell:
+        diff = ziel - aktuell
     else:
-        ziel_index = BEHAELTER.index("Uneindeutig")
+        diff = len(BEHAELTER) - (aktuell - ziel) #len behälter = anzahl der mülleimer
 
-    aktuelle_position = lade_position()
-    differenz = (ziel_index - aktuelle_position) % len(BEHAELTER)
-    steps = differenz * STEPS_PRO_SEGMENT
+    steps = diff * STEPS_PRO_SEGMENT
 
-    print(f"[Drehscheibe] Aktuell: {BEHAELTER[aktuelle_position]}, Ziel: {BEHAELTER[ziel_index]} → {steps} Schritte")
+    print(f"[drehscheibe] {BEHAELTER[aktuell]} → {BEHAELTER[ziel]} → {steps} schritte")
 
     drehe_steps(steps)
-    speichere_position(ziel_index)
+    speichere_position(ziel)
+    print(f"[drehscheibe] neu: {BEHAELTER[ziel]}")
 
-    print(f"[Drehscheibe] Neue Position: {BEHAELTER[ziel_index]}")
 
-
+# test: auf "papier" drehen
 if __name__ == "__main__":
-    drehscheibe_positionieren("Papier")
-    lgpio.gpiochip_close(h)
+    drehscheibe

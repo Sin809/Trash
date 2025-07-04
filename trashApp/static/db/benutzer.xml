@@ -56,4 +56,11 @@
     <rolle>user</rolle>
     <status>aktiv</status>
   </benutzer>
+  <benutzer id="a0b3880f-7f93-4e27-af93-e238ae5c737b">
+    <benutzername>sl</benutzername>
+    <email>sl@sl.de</email>
+    <passwort>sl</passwort>
+    <rolle>user</rolle>
+    <status>aktiv</status>
+  </benutzer>
 </benutzerliste>
